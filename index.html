@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draft Day Picks 2026</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d;
+      --accent: #f0b429; --accent2: #e05c1a;
+      --text: #e6edf3; --text2: #8b949e; --border: #30363d;
+      --green: #3fb950; --red: #f85149; --r: 8px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* HEADER */
+    header { background: linear-gradient(135deg, #001040, #001f5b, #002070); border-bottom: 3px solid var(--accent); padding: 0 24px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 24px rgba(0,0,0,.6); }
+    .hdr { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .logo { font-size: 1.35rem; font-weight: 800; letter-spacing: -.5px; }
+    .logo span { color: var(--accent); }
+    nav { display: flex; gap: 4px; }
+    nav button { background: transparent; border: 1px solid transparent; color: rgba(255,255,255,.65); padding: 7px 15px; border-radius: var(--r); cursor: pointer; font-size: .88rem; font-weight: 600; transition: all .18s; }
+    nav button:hover, nav button.active { background: rgba(240,180,41,.1); border-color: var(--accent); color: var(--accent); }
+
+    main { max-width: 1200px; margin: 0 auto; padding: 28px 20px; }
+    .view { display: none; } .view.active { display: block; }
+
+    /* BUTTONS */
+    .btn { padding: 9px 22px; border-radius: var(--r); font-size: .9rem; font-weight: 600; cursor: pointer; border: none; transition: all .18s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #001040; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(240,180,41,.4); }
+    .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger { background: var(--red); color: #fff; }
+    .btn-espn { background: linear-gradient(135deg, #cc0000, #aa0000); color: #fff; }
+    .btn-espn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+    .btn-sm { padding: 5px 13px; font-size: .82rem; }
+
+    /* HOME */
+    .home-hero { text-align: center; padding: 44px 24px 36px; background: linear-gradient(135deg, rgba(0,31,91,.25), rgba(0,32,112,.15)); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 36px; }
+    .home-hero h1 { font-size: 2.4rem; font-weight: 900; margin-bottom: 8px; }
+    .home-hero h1 span { color: var(--accent); }
+    .home-hero .sub { color: var(--text2); font-size: 1.05rem; margin-bottom: 6px; }
+    .pill { display: inline-block; background: var(--accent2); color: #fff; padding: 4px 14px; border-radius: 20px; font-size: .78rem; font-weight: 700; margin-bottom: 30px; }
+    .scoring-pills { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; }
+    .sp { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); padding: 8px 16px; font-size: .88rem; display: flex; align-items: center; gap: 8px; }
+    .sp .pt { background: var(--accent); color: #001040; border-radius: 4px; padding: 1px 8px; font-weight: 800; font-size: .78rem; }
+    .section-label { font-size: 1rem; font-weight: 700; color: var(--text2); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .member-btn { background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 18px 14px; border-radius: var(--r); cursor: pointer; font-size: .95rem; font-weight: 700; transition: all .18s; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .member-btn:hover { background: var(--bg3); border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(240,180,41,.15); }
+    .member-btn.submitted { border-color: var(--green); }
+    .member-btn .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 900; color: #001040; }
+    .member-btn .status { font-size: .72rem; color: var(--text2); font-weight: 400; }
+    .member-btn.submitted .status { color: var(--green); }
+
+    /* PICKS */
+    .picks-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .picks-header h2 { font-size: 1.55rem; font-weight: 800; }
+    .picks-header h2 span { color: var(--accent); }
+    .scoring-info { background: var(--bg2); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--r); padding: 11px 16px; margin-bottom: 18px; font-size: .85rem; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+    .scoring-info .rule { display: flex; align-items: center; gap: 6px; }
+    .score-badge { background: var(--accent); color: #001040; border-radius: 4px; padding: 1px 8px; font-weight: 800; font-size: .75rem; }
+    .note { margin-left: auto; color: var(--text2); font-size: .78rem; }
+
+    /* TABLE */
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    thead th { background: var(--bg2); padding: 11px 14px; text-align: left; font-size: .75rem; text-transform: uppercase; letter-spacing: .8px; color: var(--text2); white-space: nowrap; border-bottom: 1px solid var(--border); }
+    tbody tr { border-bottom: 1px solid rgba(48,54,61,.7); transition: background .1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,.025); }
+    tbody tr:nth-child(odd) { background: rgba(255,255,255,.012); }
+    tbody tr:nth-child(odd):hover { background: rgba(255,255,255,.03); }
+    tr.divider td { background: rgba(240,180,41,.07) !important; border-top: 2px solid rgba(240,180,41,.25); font-size: .72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; padding: 5px 14px; }
+    td { padding: 8px 12px; vertical-align: middle; }
+    .pnum { font-weight: 700; font-size: 1.05rem; width: 46px; text-align: center; }
+    .pnum.r1 { color: var(--accent); }
+    .pnum.r2 { color: #7cb9e8; }
+
+    /* INPUTS */
+    select, input[type="text"] { background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 7px 10px; border-radius: 6px; font-size: .88rem; width: 100%; transition: border-color .15s; }
+    select:focus, input[type="text"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(240,180,41,.1); }
+    select option { background: #21262d; }
+
+    /* PLAYER CELL */
+    .player-cell { display: flex; align-items: center; gap: 10px; min-width: 230px; }
+    .p-photo { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; object-position: top center; flex-shrink: 0; border: 2px solid var(--border); background: var(--bg3); }
+    .player-inp { flex: 1; min-width: 0; }
+    .team-sel { min-width: 190px; }
+    .pos-sel { min-width: 82px; }
+    .pos-sel.autofilled { border-color: var(--green); }
+
+    /* SUBMITTED */
+    .success-card { text-align: center; padding: 60px 32px; background: var(--bg2); border-radius: 16px; border: 1px solid var(--green); max-width: 560px; margin: 40px auto; }
+    .success-icon { font-size: 4.5rem; margin-bottom: 20px; }
+    .success-card h2 { font-size: 1.9rem; font-weight: 800; margin-bottom: 8px; }
+    .success-card p { color: var(--text2); margin-bottom: 10px; }
+
+    /* LEADERBOARD */
+    .lb-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .lb-head h2 { font-size: 1.55rem; font-weight: 800; }
+    .lb-table { width: 100%; border-collapse: collapse; }
+    .lb-table th { padding: 11px 14px; text-align: left; font-size: .75rem; text-transform: uppercase; letter-spacing: .8px; color: var(--text2); border-bottom: 2px solid var(--border); }
+    .lb-table td { padding: 13px 14px; border-bottom: 1px solid var(--border); }
+    .lb-table tr:last-child td { border-bottom: none; }
+    .lb-table tr:hover td { background: rgba(255,255,255,.02); }
+    .rank-badge { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .85rem; }
+    .rk1 { background: #ffd700; color: #000; } .rk2 { background: #c0c0c0; color: #000; } .rk3 { background: #cd7f32; color: #fff; } .rkx { background: var(--bg3); color: var(--text2); }
+    .score-big { font-size: 1.25rem; font-weight: 800; color: var(--accent); }
+    .cat-badge { background: var(--bg3); padding: 2px 8px; border-radius: 4px; font-size: .8rem; color: var(--text2); }
+    .empty-msg { text-align: center; padding: 60px 24px; color: var(--text2); }
+    .empty-msg h3 { font-size: 1.35rem; margin-bottom: 8px; color: var(--text); }
+
+    /* ADMIN */
+    .admin-section { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 22px; }
+    .admin-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .admin-tabs { display: flex; margin-bottom: 22px; border-bottom: 1px solid var(--border); }
+    .tab-btn { background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--text2); padding: 10px 20px; cursor: pointer; font-size: .9rem; font-weight: 600; margin-bottom: -1px; transition: all .15s; }
+    .tab-btn:hover { color: var(--text); } .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-pane { display: none; } .tab-pane.active { display: block; }
+    .admin-login-wrap { max-width: 380px; margin: 50px auto; text-align: center; }
+    .admin-login-wrap h2 { margin-bottom: 8px; }
+    .admin-login-wrap .hint { color: var(--text2); font-size: .88rem; margin-bottom: 24px; }
+    .form-grp { margin-bottom: 14px; text-align: left; }
+    .form-grp label { display: block; margin-bottom: 5px; font-size: .85rem; color: var(--text2); }
+    .form-grp input { width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 10px 13px; border-radius: var(--r); font-size: .95rem; }
+    .form-grp input:focus { outline: none; border-color: var(--accent); }
+    .upload-zone { border: 2px dashed var(--border); border-radius: var(--r); padding: 30px; text-align: center; cursor: pointer; transition: all .18s; }
+    .upload-zone:hover { border-color: var(--accent); background: rgba(240,180,41,.04); }
+    .sub-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+    .sub-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; }
+    .cell-ok { background: rgba(63,185,80,.12) !important; } .cell-no { background: rgba(248,81,73,.09) !important; }
+
+    /* ESPN IMPORT TOOLBAR */
+    .espn-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: rgba(204,0,0,.08); border: 1px solid rgba(204,0,0,.3); border-radius: var(--r); padding: 14px 18px; margin-bottom: 18px; }
+    .espn-bar .espn-logo { font-size: 1.4rem; font-weight: 900; color: #cc0000; letter-spacing: -1px; }
+    .espn-bar p { color: var(--text2); font-size: .88rem; flex: 1; min-width: 0; }
+    #espn-status { color: var(--text2); font-size: .82rem; width: 100%; margin-top: 4px; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.78); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 28px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-head h3 { font-size: 1.3rem; font-weight: 700; }
+    .close-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+    .close-btn:hover { background: var(--red); border-color: var(--red); }
+
+    /* MODAL PICKS PLAYER */
+    .modal-player { display: flex; align-items: center; gap: 8px; }
+    .modal-photo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: top; border: 1px solid var(--border); background: var(--bg3); flex-shrink: 0; }
+
+    /* TOAST */
+    #toasts { position: fixed; bottom: 22px; right: 22px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: var(--bg2); border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 11px 18px; border-radius: var(--r); box-shadow: 0 8px 28px rgba(0,0,0,.45); animation: tslide .28s ease; max-width: 310px; font-size: .9rem; }
+    .toast.err { border-left-color: var(--red); } .toast.ok { border-left-color: var(--green); }
+    @keyframes tslide { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    @media (max-width: 640px) {
+      .hdr { flex-direction: column; height: auto; padding: 10px 0; gap: 6px; }
+      .home-hero h1 { font-size: 1.7rem; }
+      nav button { padding: 6px 10px; font-size: .8rem; }
+      .picks-header { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div class="logo">🏈 <span>DRAFT DAY</span> PICKS 2026</div>
+    <nav>
+      <button class="nav-btn active" data-view="leaderboard">🏠 Home</button>
+      <button class="nav-btn" data-view="admin">⚙️ Admin</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- HOME -->
+  <div id="view-home" class="view active">
+    <div class="home-hero">
+      <h1>2026 NFL Draft <span>Pick Contest</span></h1>
+      <p class="sub">Pick the team, player, and position for each of the first 35 selections</p>
+      <div class="pill">📍 Pittsburgh, PA · April 23–25, 2026</div>
+      <div class="scoring-pills">
+        <div class="sp"><span class="pt">+1 pt</span> Correct Team</div>
+        <div class="sp"><span class="pt">+1 pt</span> Correct Player</div>
+        <div class="sp"><span class="pt">+1 pt</span> Correct Position</div>
+        <div class="sp" style="color:var(--text2)">Max 3 pts/pick · 105 pts total</div>
+      </div>
+      <div class="section-label">Select Your Name to Fill Out Your Picks</div>
+    </div>
+    <div class="members-grid" id="members-grid"></div>
+  </div>
+
+  <!-- PICKS -->
+  <div id="view-picks" class="view">
+    <div class="picks-header">
+      <div>
+        <button class="btn btn-secondary btn-sm" onclick="showView('leaderboard')" style="margin-bottom:8px">← Leaderboard</button>
+        <h2>📋 <span id="picker-name-label">Your</span> Picks</h2>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onclick="resetPicks()">↺ Reset to Default</button>
+        <button class="btn btn-primary" onclick="submitPicks()">Submit Picks ✓</button>
+      </div>
+    </div>
+    <div class="scoring-info">
+      <div class="rule"><span class="score-badge">+1</span> Correct Team</div>
+      <div class="rule"><span class="score-badge">+1</span> Correct Player</div>
+      <div class="rule"><span class="score-badge">+1</span> Correct Position</div>
+      <span class="note">Pre-filled with Kiper's Final Mock · Player dropdown auto-fills position · Change team for trades</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="text-align:center">Pick</th>
+          <th>Team</th>
+          <th>Player</th>
+          <th>Position</th>
+        </tr></thead>
+        <tbody id="picks-tbody"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:18px">
+      <button class="btn btn-secondary" onclick="resetPicks()">↺ Reset to Default</button>
+      <button class="btn btn-primary" onclick="submitPicks()">Submit Picks ✓</button>
+    </div>
+  </div>
+
+  <!-- SUBMITTED -->
+  <div id="view-submitted" class="view">
+    <div class="success-card">
+      <div class="success-icon">🎉</div>
+      <h2>Picks Submitted!</h2>
+      <p id="submitted-msg">Your picks have been saved!</p>
+      <p style="font-size:.88rem">A <strong>.json picks file</strong> downloaded automatically. Send it to the commissioner — they'll upload it in the Admin panel to load your picks.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px">
+        <button class="btn btn-secondary" onclick="redownload()">⬇ Download Again</button>
+        <button class="btn btn-primary" onclick="showView('leaderboard')">🏆 View Leaderboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div id="view-leaderboard" class="view">
+    <div class="lb-head">
+      <h2>🏆 Leaderboard</h2>
+      <span id="lb-status" style="color:var(--text2);font-size:.88rem"></span>
+    </div>
+    <div id="lb-content"></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="view-admin" class="view">
+    <div id="admin-gate">
+      <div class="admin-login-wrap">
+        <h2>⚙️ Admin Panel</h2>
+        <p class="hint">Commissioner access only</p>
+        <div class="form-grp">
+          <label>Password</label>
+          <input type="password" id="admin-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')adminLogin()">
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="adminLogin()">Login</button>
+        <p style="font-size:.75rem;color:var(--text2);margin-top:12px">Default: <strong>draft2026</strong> — change in script config</p>
+      </div>
+    </div>
+    <div id="admin-panel" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
+        <h2>⚙️ Admin Panel</h2>
+        <button class="btn btn-secondary btn-sm" onclick="adminLogout()">Logout</button>
+      </div>
+      <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="submissions" onclick="switchTab('submissions')">📥 Submissions (<span id="sub-count">0</span>/13)</button>
+        <button class="tab-btn" data-tab="results" onclick="switchTab('results')">🎯 Actual Results</button>
+        <button class="tab-btn" data-tab="compare" onclick="switchTab('compare')">📊 Scores</button>
+        <button class="tab-btn" data-tab="links" onclick="switchTab('links')">🔗 Member Links</button>
+      </div>
+
+      <!-- SUBMISSIONS TAB -->
+      <div id="tab-submissions" class="tab-pane active">
+        <div class="admin-section">
+          <h3>Import Pick Files from Members</h3>
+          <div class="upload-zone" onclick="document.getElementById('file-inp').click()">
+            <div style="font-size:2rem;margin-bottom:8px">📂</div>
+            <p style="font-weight:700;margin-bottom:4px">Click to upload pick files (.json)</p>
+            <p style="color:var(--text2);font-size:.88rem">Select one or multiple files at once</p>
+          </div>
+          <input type="file" id="file-inp" accept=".json" multiple style="display:none" onchange="importFiles(this)">
+        </div>
+        <div class="admin-section">
+          <h3>Loaded Submissions</h3>
+          <div id="submissions-list"><p style="color:var(--text2)">No submissions loaded yet.</p></div>
+        </div>
+      </div>
+
+      <!-- RESULTS TAB -->
+      <div id="tab-results" class="tab-pane">
+        <!-- ESPN Live Import Bar -->
+        <div class="espn-bar">
+          <span class="espn-logo">ESPN</span>
+          <p>Auto-import live picks as they happen during the draft</p>
+          <button class="btn btn-espn btn-sm" onclick="importFromESPN()">🔄 Refresh from ESPN</button>
+          <a href="https://www.espn.com/nfl/draft/rounds" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">📺 Watch Live on ESPN ↗</a>
+          <span id="espn-status"></span>
+        </div>
+        <div class="admin-section">
+          <h3>Actual Draft Results — Picks 1–35</h3>
+          <p style="color:var(--text2);font-size:.88rem;margin-bottom:14px">Enter each pick as announced, then hit <strong>Save &amp; Score</strong> to calculate everyone's points.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th style="text-align:center">Pick</th>
+                <th>Actual Team</th>
+                <th>Actual Player</th>
+                <th>Actual Position</th>
+              </tr></thead>
+              <tbody id="results-tbody"></tbody>
+            </table>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap">
+            <button class="btn btn-secondary" onclick="loadDefaultResults()">Load Mock as Placeholder</button>
+            <button class="btn btn-primary" onclick="saveResults()">Save &amp; Score ✓</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCORES TAB -->
+      <div id="tab-compare" class="tab-pane">
+        <div class="admin-section">
+          <div id="compare-content"><p style="color:var(--text2)">Import submissions and save actual results to see scores here.</p></div>
+        </div>
+      </div>
+
+      <!-- MEMBER LINKS TAB -->
+      <div id="tab-links" class="tab-pane">
+        <div class="admin-section">
+          <h3>Member Pick Links</h3>
+          <p style="color:var(--text2);font-size:.88rem;margin-bottom:18px">
+            Send each person their personal link. When they open it they land directly on their picks sheet.
+            The leaderboard is accessible to everyone at the base URL with no parameters.
+          </p>
+          <div id="links-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Player datalist (shared across all pick rows) -->
+<datalist id="prospects-list"></datalist>
+
+<!-- Modal -->
+<div id="modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modal-title">Picks</h3>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+// ================================================================
+//  CONFIG — EDIT THESE
+// ================================================================
+const LEAGUE_MEMBERS = [
+  "Trey",
+  "Member 2",
+  "Member 3",
+  "Member 4",
+  "Member 5",
+  "Member 6",
+  "Member 7",
+  "Member 8",
+  "Member 9",
+  "Member 10",
+  "Member 11",
+  "Member 12",
+  "Member 13"
+];
+const ADMIN_PASSWORD = "draft2026";
+
+// ================================================================
+//  PROSPECT DATABASE — Rounds 1-2 projections
+//  espnId powers the headshot at:
+//  https://a.espncdn.com/i/headshots/college-football/players/full/{id}.png
+// ================================================================
+const PROSPECTS = [
+  // ── Top 35 (Kiper Final Mock) ──────────────────────────────────
+  { name: "Fernando Mendoza",        pos: "QB",   school: "Indiana",        espnId: 4837248 },
+  { name: "David Bailey",            pos: "EDGE", school: "Texas Tech",     espnId: 4685248 },
+  { name: "Arvell Reese",            pos: "EDGE", school: "Ohio State",     espnId: 4950400 },
+  { name: "Jeremiyah Love",          pos: "RB",   school: "Notre Dame",     espnId: 4870808 },
+  { name: "Caleb Downs",             pos: "S",    school: "Ohio State",     espnId: 4870706 },
+  { name: "Sonny Styles",            pos: "LB",   school: "Ohio State",     espnId: 5081807 },
+  { name: "Carnell Tate",            pos: "WR",   school: "Ohio State",     espnId: 4871023 },
+  { name: "Rueben Bain Jr.",         pos: "EDGE", school: "Miami",          espnId: 4870617 },
+  { name: "Jordyn Tyson",            pos: "WR",   school: "Arizona State",  espnId: 4880281 },
+  { name: "Francis Mauigoa",         pos: "OT",   school: "Miami",          espnId: 4870914 },
+  { name: "Mansoor Delane",          pos: "CB",   school: "LSU",            espnId: 4880124 },
+  { name: "Kadyn Proctor",           pos: "OT",   school: "Alabama",        espnId: 4870976 },
+  { name: "Makai Lemon",             pos: "WR",   school: "USC",            espnId: 4870795 },
+  { name: "Spencer Fano",            pos: "OT",   school: "Utah",           espnId: 4870723 },
+  { name: "Kenyon Sadiq",            pos: "TE",   school: "Oregon",         espnId: 5083315 },
+  { name: "Omar Cooper Jr.",         pos: "WR",   school: "Indiana",        espnId: 4723820 },
+  { name: "Monroe Freeling",         pos: "OT",   school: "Georgia",        espnId: 4870694 },
+  { name: "Dillon Thieneman",        pos: "S",    school: "Oregon",         espnId: 4954445 },
+  { name: "Emmanuel McNeil-Warren",  pos: "S",    school: "Toledo",         espnId: 4837186 },
+  { name: "Denzel Boston",           pos: "WR",   school: "Washington",     espnId: 4832800 },
+  { name: "Olaivavega Ioane",        pos: "OG",   school: "Penn State",     espnId: 4832793 },
+  { name: "Peter Woods",             pos: "DT",   school: "Clemson",        espnId: 4871063 },
+  { name: "Blake Miller",            pos: "OT",   school: "Clemson",        espnId: 5081450 },
+  { name: "Jermod McCoy",            pos: "CB",   school: "Tennessee",      espnId: 5157289 },
+  { name: "Zion Young",              pos: "EDGE", school: "Missouri",       espnId: 4839501 },
+  { name: "Keldric Faulk",           pos: "EDGE", school: "Auburn",         espnId: 4870707 },
+  { name: "Max Iheanachor",          pos: "OT",   school: "Arizona State",  espnId: 5150136 },
+  { name: "Christen Miller",         pos: "DT",   school: "Georgia",        espnId: 4685479 },
+  { name: "Colton Hood",             pos: "CB",   school: "Tennessee",      espnId: 4921249 },
+  { name: "Ty Simpson",              pos: "QB",   school: "Alabama",        espnId: 4685522 },
+  { name: "Akheem Mesidor",          pos: "EDGE", school: "Miami",          espnId: 4429190 },
+  { name: "Jadarian Price",          pos: "RB",   school: "Notre Dame",     espnId: 4685512 },
+  { name: "CJ Allen",                pos: "LB",   school: "Georgia",        espnId: 4870598 },
+  { name: "Germie Bernard",          pos: "WR",   school: "Alabama",        espnId: 4685261 },
+  { name: "Malachi Lawrence",        pos: "EDGE", school: "UCF",            espnId: 4710067 },
+  // ── Additional Round 2 Prospects ──────────────────────────────
+  { name: "Keylan Rutledge",         pos: "OG",   school: "Georgia Tech",   espnId: null },
+  { name: "Kayden McDonald",         pos: "DT",   school: "Ohio State",     espnId: null },
+  { name: "Chase Bisontis",          pos: "OG",   school: "Texas A&M",      espnId: null },
+  { name: "Chris Johnson",           pos: "CB",   school: "San Diego State",espnId: null },
+  { name: "R Mason Thomas",          pos: "EDGE", school: "Oklahoma",       espnId: null },
+  { name: "Cashius Howell",          pos: "EDGE", school: "Texas A&M",      espnId: null },
+  { name: "KC Concepcion",           pos: "WR",   school: "Texas A&M",      espnId: null },
+  { name: "T.J. Parker",             pos: "DE",   school: "Clemson",        espnId: null },
+  { name: "Brandon Cisse",           pos: "CB",   school: "South Carolina", espnId: null },
+  { name: "Eli Stowers",             pos: "TE",   school: "Vanderbilt",     espnId: null },
+  { name: "Jacob Rodriguez",         pos: "LB",   school: "Texas Tech",     espnId: null },
+  { name: "Anthony Hill Jr.",        pos: "LB",   school: "Texas",          espnId: null },
+  { name: "Lee Hunter",              pos: "DT",   school: "Texas Tech",     espnId: null },
+  { name: "Mike Washington Jr.",     pos: "RB",   school: "Arkansas",       espnId: null },
+  { name: "Derrick Moore",           pos: "EDGE", school: "Michigan",       espnId: null },
+  { name: "Caleb Lomu",              pos: "OT",   school: "Utah",           espnId: null },
+  { name: "Avieon Terrell",          pos: "CB",   school: "Clemson",        espnId: null },
+  { name: "Zachariah Branch",        pos: "WR",   school: "Georgia",        espnId: null },
+  { name: "Oscar Delp",              pos: "TE",   school: "Georgia",        espnId: null },
+  { name: "Emmanuel Pregnon",        pos: "OG",   school: "Oregon",         espnId: null },
+  { name: "Jaishawn Barham",         pos: "EDGE", school: "Michigan",       espnId: null },
+  { name: "Treydan Stukes",          pos: "S",    school: "Arizona",        espnId: null },
+  { name: "Gabe Jacas",              pos: "DE",   school: "Illinois",       espnId: null },
+  { name: "D'Angelo Ponds",          pos: "CB",   school: "Indiana",        espnId: null },
+  { name: "Logan Jones",             pos: "C",    school: "Iowa",           espnId: null },
+  { name: "Josiah Trotter",          pos: "LB",   school: "Missouri",       espnId: null },
+  { name: "Caleb Banks",             pos: "DT",   school: "Florida",        espnId: null },
+  { name: "Chris Brazzell II",       pos: "WR",   school: "Tennessee",      espnId: null },
+  { name: "Malik Muhammad",          pos: "CB",   school: "Texas",          espnId: null },
+];
+// Fast lookup by name
+const PROSPECT_MAP = {};
+PROSPECTS.forEach(p => { PROSPECT_MAP[p.name.toLowerCase()] = p; });
+
+// ================================================================
+//  DRAFT DATA — actual 2026 order + Kiper player projections
+// ================================================================
+const DRAFT_DATA = [
+  { pick:  1, team: "Las Vegas Raiders",       player: "Fernando Mendoza"       },
+  { pick:  2, team: "New York Jets",            player: "David Bailey"           },
+  { pick:  3, team: "Arizona Cardinals",        player: "Arvell Reese"           },
+  { pick:  4, team: "Tennessee Titans",         player: "Jeremiyah Love"         },
+  { pick:  5, team: "New York Giants",          player: "Caleb Downs"            },
+  { pick:  6, team: "Cleveland Browns",         player: "Sonny Styles"           },
+  { pick:  7, team: "Washington Commanders",    player: "Carnell Tate"           },
+  { pick:  8, team: "New Orleans Saints",       player: "Rueben Bain Jr."        },
+  { pick:  9, team: "Kansas City Chiefs",       player: "Jordyn Tyson"           },
+  { pick: 10, team: "New York Giants",          player: "Francis Mauigoa"        },
+  { pick: 11, team: "Miami Dolphins",           player: "Mansoor Delane"         },
+  { pick: 12, team: "Dallas Cowboys",           player: "Kadyn Proctor"          },
+  { pick: 13, team: "Los Angeles Rams",         player: "Makai Lemon"            },
+  { pick: 14, team: "Baltimore Ravens",         player: "Spencer Fano"           },
+  { pick: 15, team: "Tampa Bay Buccaneers",     player: "Kenyon Sadiq"           },
+  { pick: 16, team: "New York Jets",            player: "Omar Cooper Jr."        },
+  { pick: 17, team: "Detroit Lions",            player: "Monroe Freeling"        },
+  { pick: 18, team: "Minnesota Vikings",        player: "Dillon Thieneman"       },
+  { pick: 19, team: "Carolina Panthers",        player: "Emmanuel McNeil-Warren" },
+  { pick: 20, team: "Dallas Cowboys",           player: "Denzel Boston"          },
+  { pick: 21, team: "Pittsburgh Steelers",      player: "Olaivavega Ioane"       },
+  { pick: 22, team: "Los Angeles Chargers",     player: "Peter Woods"            },
+  { pick: 23, team: "Philadelphia Eagles",      player: "Blake Miller"           },
+  { pick: 24, team: "Cleveland Browns",         player: "Jermod McCoy"           },
+  { pick: 25, team: "Chicago Bears",            player: "Zion Young"             },
+  { pick: 26, team: "Buffalo Bills",            player: "Keldric Faulk"          },
+  { pick: 27, team: "San Francisco 49ers",      player: "Max Iheanachor"         },
+  { pick: 28, team: "Houston Texans",           player: "Christen Miller"        },
+  { pick: 29, team: "Kansas City Chiefs",       player: "Colton Hood"            },
+  { pick: 30, team: "Miami Dolphins",           player: "Ty Simpson"             },
+  { pick: 31, team: "New England Patriots",     player: "Akheem Mesidor"         },
+  { pick: 32, team: "Seattle Seahawks",         player: "Jadarian Price"         },
+  { pick: 33, team: "New York Jets",            player: "CJ Allen"               },
+  { pick: 34, team: "Arizona Cardinals",        player: "Germie Bernard"         },
+  { pick: 35, team: "Tennessee Titans",         player: "Malachi Lawrence"       },
+];
+
+const NFL_TEAMS = [
+  "Arizona Cardinals","Atlanta Falcons","Baltimore Ravens","Buffalo Bills",
+  "Carolina Panthers","Chicago Bears","Cincinnati Bengals","Cleveland Browns",
+  "Dallas Cowboys","Denver Broncos","Detroit Lions","Green Bay Packers",
+  "Houston Texans","Indianapolis Colts","Jacksonville Jaguars","Kansas City Chiefs",
+  "Las Vegas Raiders","Los Angeles Chargers","Los Angeles Rams","Miami Dolphins",
+  "Minnesota Vikings","New England Patriots","New Orleans Saints","New York Giants",
+  "New York Jets","Philadelphia Eagles","Pittsburgh Steelers","San Francisco 49ers",
+  "Seattle Seahawks","Tampa Bay Buccaneers","Tennessee Titans","Washington Commanders"
+];
+
+const POSITIONS = ["QB","RB","WR","TE","OT","OG","C","OL","DE","DT","DL","LB","CB","S","DB","EDGE","K","P"];
+
+// ESPN teamId → full name (for live import)
+const ESPN_TEAM_MAP = {
+  "1":"Atlanta Falcons","2":"Buffalo Bills","3":"Chicago Bears","4":"Cincinnati Bengals",
+  "5":"Cleveland Browns","6":"Dallas Cowboys","7":"Denver Broncos","8":"Detroit Lions",
+  "9":"Green Bay Packers","10":"Tennessee Titans","11":"Indianapolis Colts","12":"Kansas City Chiefs",
+  "13":"Las Vegas Raiders","14":"Los Angeles Rams","15":"Miami Dolphins","16":"Minnesota Vikings",
+  "17":"New England Patriots","18":"New Orleans Saints","19":"New York Giants","20":"New York Jets",
+  "21":"Philadelphia Eagles","22":"Arizona Cardinals","23":"Pittsburgh Steelers","24":"Los Angeles Chargers",
+  "25":"San Francisco 49ers","26":"Seattle Seahawks","27":"Tampa Bay Buccaneers","28":"Washington Commanders",
+  "29":"Carolina Panthers","30":"Jacksonville Jaguars","33":"Baltimore Ravens","34":"Houston Texans"
+};
+
+// Silhouette for when ESPN headshot fails
+const SILO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2321262d'/%3E%3Ccircle cx='50' cy='34' r='18' fill='%2330363d'/%3E%3Cellipse cx='50' cy='92' rx='30' ry='25' fill='%2330363d'/%3E%3C/svg%3E";
+
+// ================================================================
+//  STATE
+// ================================================================
+let currentMemberIdx = null;
+let currentPicks = [];
+let lastSubmission = null;
+let allSubmissions = {};
+let actualResults = [];
+let adminIn = false;
+
+// ================================================================
+//  BOOT
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  try { allSubmissions = JSON.parse(localStorage.getItem('draftSubs2026') || '{}'); } catch(e){}
+  try { actualResults  = JSON.parse(localStorage.getItem('draftRes2026')  || '[]'); } catch(e){}
+
+  // Populate datalist
+  const dl = document.getElementById('prospects-list');
+  PROSPECTS.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.name;
+    opt.label = `${p.pos} · ${p.school}`;
+    dl.appendChild(opt);
+  });
+
+  renderHome();
+  document.querySelectorAll('.nav-btn').forEach(b =>
+    b.addEventListener('click', () => showView(b.dataset.view))
+  );
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // URL-based routing: ?member=Name → show that person's picks directly
+  const urlParams = new URLSearchParams(window.location.search);
+  const memberParam = urlParams.get('member');
+  if (memberParam) {
+    const idx = LEAGUE_MEMBERS.findIndex(m => m.toLowerCase() === memberParam.toLowerCase());
+    if (idx !== -1) {
+      selectMember(idx);
+    } else {
+      showView('leaderboard');
+    }
+  } else {
+    showView('leaderboard');
+  }
+});
+
+// ================================================================
+//  NAVIGATION
+// ================================================================
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.view === name)
+  );
+  if (name === 'leaderboard') renderLeaderboard();
+  if (name === 'admin') refreshAdminSubs();
+}
+
+// ================================================================
+//  HOME
+// ================================================================
+function renderHome() {
+  document.getElementById('members-grid').innerHTML = LEAGUE_MEMBERS.map((name, i) => {
+    const done = !!allSubmissions[name];
+    return `<button class="member-btn${done?' submitted':''}" onclick="selectMember(${i})">
+      <div class="avatar">${name[0].toUpperCase()}</div>
+      <div>${eh(name)}</div>
+      <div class="status">${done ? '✓ Picks submitted' : 'Tap to fill out picks'}</div>
+    </button>`;
+  }).join('');
+}
+
+// ================================================================
+//  PICKS TABLE
+// ================================================================
+function selectMember(idx) {
+  currentMemberIdx = idx;
+  const name = LEAGUE_MEMBERS[idx];
+  document.getElementById('picker-name-label').textContent = name + "'s";
+  currentPicks = allSubmissions[name]
+    ? allSubmissions[name].picks.map(p => ({...p}))
+    : defaultPicks();
+  renderPicksTable();
+  showView('picks');
+}
+
+function defaultPicks() {
+  return DRAFT_DATA.map(d => {
+    const p = PROSPECT_MAP[d.player.toLowerCase()];
+    return { team: d.team, player: d.player, position: p ? p.pos : 'QB' };
+  });
+}
+
+function photoUrl(espnId) {
+  return espnId
+    ? `https://a.espncdn.com/i/headshots/college-football/players/full/${espnId}.png`
+    : SILO;
+}
+
+function renderPicksTable() {
+  const tbody = document.getElementById('picks-tbody');
+  let html = '';
+  DRAFT_DATA.forEach((d, i) => {
+    const p = currentPicks[i];
+    const prospect = PROSPECT_MAP[p.player.toLowerCase()];
+    const imgSrc = prospect ? photoUrl(prospect.espnId) : SILO;
+    const espnId = prospect ? (prospect.espnId || '') : '';
+
+    if (d.pick === 33) html += `<tr class="divider"><td colspan="4">— Round 2 Begins (Pick 33) —</td></tr>`;
+
+    const teamOpts = NFL_TEAMS.map(t => `<option${p.team===t?' selected':''}>${eh(t)}</option>`).join('');
+    const posOpts  = POSITIONS.map(pos => `<option${p.position===pos?' selected':''}>${pos}</option>`).join('');
+
+    html += `<tr>
+      <td class="pnum ${d.pick<=32?'r1':'r2'}">${d.pick}</td>
+      <td><select class="team-sel" data-idx="${i}" data-field="team">${teamOpts}</select></td>
+      <td>
+        <div class="player-cell">
+          <img id="ph-${i}" class="p-photo" src="${imgSrc}" data-id="${espnId}"
+            onerror="imgFallback(this)" alt="">
+          <input id="pi-${i}" type="text" list="prospects-list" class="player-inp"
+            value="${eh(p.player)}" placeholder="Type player name…"
+            data-idx="${i}" oninput="onPlayerInput(this)" onchange="onPlayerInput(this)">
+        </div>
+      </td>
+      <td><select id="ps-${i}" class="pos-sel${prospect?' autofilled':''}" data-idx="${i}" data-field="position">${posOpts}</select></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+
+  // Delegated listeners
+  tbody.addEventListener('change', e => {
+    const el = e.target;
+    const idx = el.dataset.idx;
+    if (idx === undefined) return;
+    if (el.dataset.field === 'team') currentPicks[idx].team = el.value;
+    if (el.dataset.field === 'position') currentPicks[idx].position = el.value;
+  });
+}
+
+function onPlayerInput(el) {
+  const idx = parseInt(el.dataset.idx);
+  const name = el.value.trim();
+  currentPicks[idx].player = name;
+
+  const prospect = PROSPECT_MAP[name.toLowerCase()];
+  const imgEl = document.getElementById(`ph-${idx}`);
+  const posEl = document.getElementById(`ps-${idx}`);
+
+  if (prospect) {
+    // Update photo
+    if (imgEl) {
+      imgEl.src = photoUrl(prospect.espnId);
+      imgEl.dataset.id = prospect.espnId || '';
+    }
+    // Auto-fill position
+    if (posEl && posEl.value !== prospect.pos) {
+      posEl.value = prospect.pos;
+      posEl.classList.add('autofilled');
+      currentPicks[idx].position = prospect.pos;
+    }
+  } else if (name === '') {
+    if (imgEl) imgEl.src = SILO;
+    if (posEl) posEl.classList.remove('autofilled');
+  }
+}
+
+function imgFallback(img) {
+  const id = img.dataset.id;
+  if (img.src.includes('college-football') && id) {
+    img.src = `https://a.espncdn.com/i/headshots/nfl/players/full/${id}.png`;
+    img.onerror = () => { img.src = SILO; img.onerror = null; };
+  } else {
+    img.src = SILO;
+    img.onerror = null;
+  }
+}
+
+function resetPicks() {
+  if (!confirm('Reset all picks to Kiper\'s mock draft?')) return;
+  currentPicks = defaultPicks();
+  renderPicksTable();
+  toast('Picks reset to default mock draft');
+}
+
+function submitPicks() {
+  const name = LEAGUE_MEMBERS[currentMemberIdx];
+  const empty = currentPicks.filter(p => !p.player.trim());
+  if (empty.length) { toast(`${empty.length} player name(s) empty`, 'err'); return; }
+  const sub = { memberName: name, picks: currentPicks.map(p=>({...p})), submittedAt: Date.now() };
+  allSubmissions[name] = sub;
+  lastSubmission = sub;
+  localStorage.setItem('draftSubs2026', JSON.stringify(allSubmissions));
+  downloadJSON(name, sub);
+  renderHome();
+  showView('submitted');
+  document.getElementById('submitted-msg').textContent = `${name}'s picks saved!`;
+}
+
+function downloadJSON(name, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${name.replace(/\s+/g,'_')}_draft_picks_2026.json`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function redownload() { if (lastSubmission) downloadJSON(lastSubmission.memberName, lastSubmission); }
+
+// ================================================================
+//  LEADERBOARD
+// ================================================================
+function renderLeaderboard() {
+  const cnt = document.getElementById('lb-content');
+  const subs = Object.entries(allSubmissions);
+  const hasRes = actualResults.length === 35 && actualResults.some(r => r.player);
+  document.getElementById('lb-status').textContent =
+    `${subs.length}/13 submitted · ${hasRes ? 'Results entered — scores calculated' : 'Awaiting actual results'}`;
+
+  if (!subs.length) {
+    cnt.innerHTML = `<div class="empty-msg"><h3>No picks submitted yet</h3><p>Have each member tap their name on the Home page, fill in picks, and submit.</p></div>`;
+    return;
+  }
+  const scored = subs.map(([name, sub]) => {
+    let tp=0,pp=0,sp=0;
+    if (hasRes) sub.picks.forEach((pick,i) => {
+      const r = actualResults[i]; if(!r) return;
+      if (norm(pick.team)===norm(r.team)) tp++;
+      if (norm(pick.player)===norm(r.player)) pp++;
+      if (norm(pick.position)===norm(r.position)) sp++;
+    });
+    return { name, tp, pp, sp, total:tp+pp+sp, submittedAt: sub.submittedAt };
+  });
+  if (hasRes) scored.sort((a,b) => b.total-a.total);
+
+  cnt.innerHTML = `<div class="table-wrap"><table class="lb-table"><thead><tr>
+    <th>Rank</th><th>Name</th>
+    ${hasRes?'<th>Score</th><th>Teams</th><th>Players</th><th>Positions</th>':'<th>Submitted</th>'}
+    <th>View</th>
+  </tr></thead><tbody>
+  ${scored.map((s,i) => {
+    const rc = i===0?'rk1':i===1?'rk2':i===2?'rk3':'rkx';
+    return `<tr>
+      <td><div class="rank-badge ${rc}">${i+1}</div></td>
+      <td style="font-weight:700">${eh(s.name)}</td>
+      ${hasRes?`
+        <td><span class="score-big">${s.total}</span><span style="color:var(--text2);font-size:.8rem">/105</span></td>
+        <td><span class="cat-badge">${s.tp}/35</span></td>
+        <td><span class="cat-badge">${s.pp}/35</span></td>
+        <td><span class="cat-badge">${s.sp}/35</span></td>
+      `:`<td style="color:var(--text2);font-size:.85rem">${new Date(s.submittedAt).toLocaleDateString()}</td>`}
+      <td><button class="btn btn-secondary btn-sm" data-mn="${eh(s.name)}" onclick="openModal(this.dataset.mn)">View</button></td>
+    </tr>`;
+  }).join('')}
+  </tbody></table></div>`;
+}
+
+// ================================================================
+//  MODAL
+// ================================================================
+function openModal(name) {
+  const sub = allSubmissions[name];
+  if (!sub) return;
+  const hasRes = actualResults.length===35 && actualResults.some(r=>r.player);
+  document.getElementById('modal-title').textContent = `${name}'s Picks`;
+
+  let html = `<div class="table-wrap"><table><thead><tr>
+    <th>Pick</th><th>Team</th><th>Player</th><th>Position</th>${hasRes?'<th>Pts</th>':''}
+  </tr></thead><tbody>`;
+
+  sub.picks.forEach((pick,i) => {
+    const num = i+1;
+    if (num===33) html += `<tr class="divider"><td colspan="${hasRes?5:4}">— Round 2 —</td></tr>`;
+    const prospect = PROSPECT_MAP[pick.player.toLowerCase()];
+    const imgSrc = prospect ? photoUrl(prospect.espnId) : SILO;
+    let tc='',pc='',sc='',pts=0;
+    if (hasRes && actualResults[i]) {
+      const r = actualResults[i];
+      const tok=norm(pick.team)===norm(r.team), pok=norm(pick.player)===norm(r.player), psok=norm(pick.position)===norm(r.position);
+      tc=tok?'cell-ok':'cell-no'; pc=pok?'cell-ok':'cell-no'; sc=psok?'cell-ok':'cell-no';
+      pts=(tok?1:0)+(pok?1:0)+(psok?1:0);
+    }
+    html += `<tr>
+      <td class="pnum ${num<=32?'r1':'r2'}">${num}</td>
+      <td class="${tc}">${eh(pick.team)}</td>
+      <td class="${pc}">
+        <div class="modal-player">
+          <img class="modal-photo" src="${imgSrc}" data-id="${prospect?.espnId||''}" onerror="imgFallback(this)" alt="">
+          ${eh(pick.player)}
+        </div>
+      </td>
+      <td class="${sc}">${eh(pick.position)}</td>
+      ${hasRes?`<td style="font-weight:700">${pts}/3</td>`:''}
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+// ================================================================
+//  ADMIN
+// ================================================================
+function adminLogin() {
+  if (document.getElementById('admin-pw').value === ADMIN_PASSWORD) {
+    adminIn = true;
+    document.getElementById('admin-gate').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    refreshAdminSubs();
+    buildResultsTable();
+    renderCompare();
+  } else toast('Incorrect password', 'err');
+}
+
+function adminLogout() {
+  adminIn = false;
+  document.getElementById('admin-gate').style.display = 'block';
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('admin-pw').value = '';
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if (tab==='compare') renderCompare();
+  if (tab==='links')   buildMemberLinks();
+}
+
+function buildMemberLinks() {
+  const base = window.location.origin + window.location.pathname;
+  const el = document.getElementById('links-list');
+  el.innerHTML = LEAGUE_MEMBERS.map((name, i) => {
+    const url = `${base}?member=${encodeURIComponent(name)}`;
+    const done = !!allSubmissions[name];
+    return `
+      <div style="display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid ${done?'var(--green)':'var(--border)'};border-radius:8px;padding:12px 14px;margin-bottom:8px">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#001040;font-size:.9rem;flex-shrink:0">${name[0]}</div>
+        <div style="font-weight:700;min-width:110px">${eh(name)}</div>
+        <div style="font-size:.75rem;color:${done?'var(--green)':'var(--text2)'};">${done?'✓ Submitted':'Not submitted'}</div>
+        <input type="text" value="${eh(url)}" readonly
+          style="flex:1;font-size:.8rem;background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:6px 10px;border-radius:6px;cursor:text;min-width:0">
+        <button class="btn btn-secondary btn-sm" onclick="copyLink('${url.replace(/'/g,"\\'")}',this)">📋 Copy</button>
+      </div>`;
+  }).join('');
+}
+
+function copyLink(url, btn) {
+  navigator.clipboard.writeText(url).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
+  }).catch(() => {
+    // Fallback for non-HTTPS
+    const el = document.createElement('textarea');
+    el.value = url; document.body.appendChild(el);
+    el.select(); document.execCommand('copy');
+    document.body.removeChild(el);
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+  });
+}
+
+function refreshAdminSubs() {
+  if (!adminIn) return;
+  const subs = Object.entries(allSubmissions);
+  document.getElementById('sub-count').textContent = subs.length;
+  const list = document.getElementById('submissions-list');
+  if (!list) return;
+  if (!subs.length) { list.innerHTML = '<p style="color:var(--text2)">No submissions loaded. Upload .json files above.</p>'; return; }
+  list.innerHTML = `<div class="sub-cards">${subs.map(([name,sub]) => `
+    <div class="sub-card">
+      <div style="font-weight:700;font-size:1rem">${eh(name)}</div>
+      <div style="font-size:.78rem;color:var(--text2);margin:4px 0 12px">Submitted ${new Date(sub.submittedAt).toLocaleString()}</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary btn-sm" data-mn="${eh(name)}" onclick="openModal(this.dataset.mn)">View Picks</button>
+        <button class="btn btn-danger btn-sm" data-dn="${eh(name)}" onclick="deleteSub(this.dataset.dn)">Delete</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function deleteSub(name) {
+  if (!confirm(`Delete ${name}'s picks?`)) return;
+  delete allSubmissions[name];
+  localStorage.setItem('draftSubs2026', JSON.stringify(allSubmissions));
+  refreshAdminSubs(); renderHome(); toast(`${name}'s picks removed`);
+}
+
+function importFiles(input) {
+  let ok = 0;
+  Array.from(input.files).forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const d = JSON.parse(e.target.result);
+        if (d.memberName && Array.isArray(d.picks) && d.picks.length===35) {
+          allSubmissions[d.memberName] = { picks:d.picks, submittedAt:d.submittedAt, memberName:d.memberName };
+          ok++;
+          localStorage.setItem('draftSubs2026', JSON.stringify(allSubmissions));
+          refreshAdminSubs(); renderHome();
+          toast(`Loaded ${ok} file${ok!==1?'s':''}`, 'ok');
+        } else toast(`Bad format: ${f.name}`, 'err');
+      } catch { toast(`Error reading ${f.name}`, 'err'); }
+    };
+    reader.readAsText(f);
+  });
+  input.value = '';
+}
+
+// ── Results table ──
+function buildResultsTable() {
+  const tbody = document.getElementById('results-tbody');
+  if (!tbody) return;
+  let html = '';
+  DRAFT_DATA.forEach((d,i) => {
+    const r = actualResults[i] || { team:'', player:'', position:'' };
+    if (d.pick===33) html += `<tr class="divider"><td colspan="4">— Round 2 —</td></tr>`;
+    const teamOpts = `<option value="">— Select —</option>` + NFL_TEAMS.map(t=>`<option${r.team===t?' selected':''}>${eh(t)}</option>`).join('');
+    const posOpts  = `<option value="">—</option>` + POSITIONS.map(p=>`<option${r.position===p?' selected':''}>${p}</option>`).join('');
+    html += `<tr>
+      <td class="pnum ${d.pick<=32?'r1':'r2'}">${d.pick}</td>
+      <td><select class="team-sel" id="rt-${i}">${teamOpts}</select></td>
+      <td>
+        <div class="player-cell">
+          <img id="rph-${i}" class="p-photo" src="${SILO}" data-id="" onerror="imgFallback(this)" alt="">
+          <input type="text" list="prospects-list" class="player-inp" id="rp-${i}"
+            value="${eh(r.player)}" placeholder="Player name" oninput="onResultPlayer(this,${i})" onchange="onResultPlayer(this,${i})">
+        </div>
+      </td>
+      <td><select class="pos-sel" id="rs-${i}">${posOpts}</select></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+  // Init photos for already-filled results
+  for (let i=0; i<35; i++) {
+    const r = actualResults[i];
+    if (r && r.player) updateResultPhoto(i, r.player);
+  }
+}
+
+function onResultPlayer(el, idx) {
+  const name = el.value.trim();
+  const prospect = PROSPECT_MAP[name.toLowerCase()];
+  updateResultPhoto(idx, name);
+  if (prospect) {
+    const posEl = document.getElementById(`rs-${idx}`);
+    if (posEl) posEl.value = prospect.pos;
+  }
+}
+
+function updateResultPhoto(idx, name) {
+  const imgEl = document.getElementById(`rph-${idx}`);
+  if (!imgEl) return;
+  const prospect = PROSPECT_MAP[name.toLowerCase()];
+  if (prospect && prospect.espnId) {
+    imgEl.src = photoUrl(prospect.espnId);
+    imgEl.dataset.id = prospect.espnId;
+  } else {
+    imgEl.src = SILO;
+    imgEl.dataset.id = '';
+  }
+}
+
+function loadDefaultResults() {
+  DRAFT_DATA.forEach((d,i) => {
+    const te=document.getElementById(`rt-${i}`), pe=document.getElementById(`rp-${i}`), se=document.getElementById(`rs-${i}`);
+    const prospect = PROSPECT_MAP[d.player.toLowerCase()];
+    if (te) te.value = d.team;
+    if (pe) pe.value = d.player;
+    if (se && prospect) se.value = prospect.pos;
+    updateResultPhoto(i, d.player);
+  });
+  toast('Mock draft loaded as placeholder — update with actual picks as announced');
+}
+
+function saveResults() {
+  actualResults = [];
+  for (let i=0; i<35; i++) {
+    actualResults.push({
+      team:     (document.getElementById(`rt-${i}`)?.value || ''),
+      player:   (document.getElementById(`rp-${i}`)?.value.trim() || ''),
+      position: (document.getElementById(`rs-${i}`)?.value || '')
+    });
+  }
+  localStorage.setItem('draftRes2026', JSON.stringify(actualResults));
+  renderCompare();
+  toast('Results saved — scores updated!', 'ok');
+}
+
+// ── ESPN Live Import ──
+async function importFromESPN() {
+  const statusEl = document.getElementById('espn-status');
+  statusEl.textContent = '⏳ Fetching picks from ESPN...';
+
+  try {
+    // Try fetching both round 1 and round 2 simultaneously
+    const [r1res, r2res] = await Promise.all([
+      fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/draft?season=2026&round=1'),
+      fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/draft?season=2026&round=2')
+    ]);
+    const r1 = await r1res.json();
+    const r2 = await r2res.json();
+
+    const picks = [...(r1.picks||[]), ...(r2.picks||[]).slice(0,3)];
+    let updated = 0;
+
+    for (const pick of picks) {
+      if (!pick.overall || pick.overall > 35) continue;
+      const idx = pick.overall - 1;
+
+      // Update team
+      const team = ESPN_TEAM_MAP[String(pick.teamId)];
+      if (team) {
+        const te = document.getElementById(`rt-${idx}`);
+        if (te) te.value = team;
+      }
+
+      // Try to get player from candidate or athlete reference
+      const athleteId = pick.athleteId || pick.athlete?.id || pick.athlete;
+      if (athleteId && typeof athleteId !== 'object') {
+        try {
+          // Try NFL athlete endpoint, then college
+          let athlete = null;
+          for (const sport of ['nfl','college-football']) {
+            const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/${sport}/athletes/${athleteId}`);
+            if (res.ok) { athlete = await res.json(); break; }
+          }
+          if (athlete) {
+            const playerName = athlete.fullName || athlete.displayName || '';
+            const pos = athlete.position?.abbreviation || '';
+            const pe = document.getElementById(`rp-${idx}`);
+            const se = document.getElementById(`rs-${idx}`);
+            if (pe && playerName) { pe.value = playerName; updateResultPhoto(idx, playerName); updated++; }
+            if (se && pos) se.value = pos;
+          }
+        } catch(err) { /* athlete fetch failed, skip */ }
+      }
+    }
+
+    if (updated > 0) {
+      statusEl.textContent = `✅ Imported ${updated} pick${updated!==1?'s':''} from ESPN`;
+      toast(`Imported ${updated} live pick${updated!==1?'s':''} from ESPN!`, 'ok');
+    } else {
+      statusEl.textContent = `ℹ️ No new picks announced yet — try again when picks are made`;
+    }
+  } catch(err) {
+    statusEl.textContent = `❌ Could not reach ESPN. Check the live page manually.`;
+    toast('ESPN import failed — enter results manually', 'err');
+  }
+}
+
+// ── Scores tab ──
+function renderCompare() {
+  const el = document.getElementById('compare-content');
+  if (!el) return;
+  const hasRes = actualResults.length===35 && actualResults.some(r=>r.player);
+  const subs = Object.entries(allSubmissions);
+  if (!subs.length || !hasRes) { el.innerHTML = '<p style="color:var(--text2)">Import submissions and save actual results to see scores.</p>'; return; }
+
+  const scored = subs.map(([name,sub]) => {
+    let tp=0,pp=0,sp=0;
+    sub.picks.forEach((pick,i) => {
+      const r=actualResults[i]; if(!r) return;
+      if(norm(pick.team)===norm(r.team)) tp++;
+      if(norm(pick.player)===norm(r.player)) pp++;
+      if(norm(pick.position)===norm(r.position)) sp++;
+    });
+    return { name, tp, pp, sp, total:tp+pp+sp };
+  }).sort((a,b)=>b.total-a.total);
+
+  el.innerHTML = `<table class="lb-table" style="margin-bottom:24px"><thead><tr>
+    <th>Rank</th><th>Name</th><th>Total</th><th>Teams</th><th>Players</th><th>Positions</th><th>View</th>
+  </tr></thead><tbody>
+  ${scored.map((s,i)=>{
+    const rc=i===0?'rk1':i===1?'rk2':i===2?'rk3':'rkx';
+    return `<tr>
+      <td><div class="rank-badge ${rc}">${i+1}</div></td>
+      <td style="font-weight:700">${eh(s.name)}</td>
+      <td><span class="score-big">${s.total}</span><span style="color:var(--text2);font-size:.8rem">/105</span></td>
+      <td>${s.tp}/35</td><td>${s.pp}/35</td><td>${s.sp}/35</td>
+      <td><button class="btn btn-secondary btn-sm" data-mn="${eh(s.name)}" onclick="openModal(this.dataset.mn)">View</button></td>
+    </tr>`;
+  }).join('')}
+  </tbody></table>`;
+}
+
+// ================================================================
+//  UTILS
+// ================================================================
+function norm(s) { return (s||'').toLowerCase().trim().replace(/\s+/g,' '); }
+function eh(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg, type='') {
+  const c = document.getElementById('toasts');
+  const d = document.createElement('div');
+  d.className = `toast ${type}`; d.textContent = msg;
+  c.appendChild(d); setTimeout(() => d.remove(), 4200);
+}
+</script>
+</body>
+</html>
