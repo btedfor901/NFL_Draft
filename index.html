@@ -1247,7 +1247,7 @@ function renderLeaderboard() {
   const subs = Object.entries(allSubmissions);
   const hasRes = actualResults.length === 35 && actualResults.some(r => r.player);
   document.getElementById('lb-status').textContent =
-    `${subs.length}/12 submitted · ${hasRes ? 'Results entered — scores calculated' : 'Awaiting actual results'}`;
+    `${subs.length}/${LEAGUE_MEMBERS.length} submitted · ${hasRes ? 'Results entered — scores calculated' : 'Awaiting actual results'}`;
 
   if (!subs.length) {
     cnt.innerHTML = `<div class="empty-msg"><h3>No picks submitted yet</h3><p>Have each member tap their name on the Home page, fill in picks, and submit.</p></div>`;
