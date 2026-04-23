@@ -151,6 +151,25 @@
     .modal-player { display: flex; align-items: center; gap: 8px; }
     .modal-photo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: top; border: 1px solid var(--border); background: var(--bg3); flex-shrink: 0; }
 
+    /* CUSTOM PLAYER DROPDOWN */
+    .cs-trigger { display: flex; align-items: center; gap: 9px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; cursor: pointer; min-width: 230px; user-select: none; transition: border-color .15s; }
+    .cs-trigger:hover { border-color: var(--accent); }
+    .cs-trigger.open { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(240,180,41,.1); }
+    .cs-trigger .p-photo { width: 34px; height: 34px; flex-shrink: 0; }
+    .cs-name { flex: 1; font-size: .88rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cs-arrow { color: var(--text2); font-size: .65rem; flex-shrink: 0; }
+    .cs-dropdown { position: fixed; z-index: 600; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,.6); display: flex; flex-direction: column; overflow: hidden; }
+    .cs-search { padding: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .cs-search input { width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 7px 10px; border-radius: 6px; font-size: .88rem; }
+    .cs-search input:focus { outline: none; border-color: var(--accent); }
+    .cs-list { overflow-y: auto; max-height: 300px; }
+    .cs-option { display: flex; align-items: center; gap: 10px; padding: 8px 12px; cursor: pointer; transition: background .1s; }
+    .cs-option:hover, .cs-option.selected { background: var(--bg3); }
+    .cs-opt-photo { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; object-position: top; border: 1px solid var(--border); background: var(--bg3); flex-shrink: 0; }
+    .cs-opt-info { flex: 1; min-width: 0; }
+    .cs-opt-name { font-weight: 600; font-size: .88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cs-opt-sub { font-size: .73rem; color: var(--text2); }
+
     /* TOAST */
     #toasts { position: fixed; bottom: 22px; right: 22px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
     .toast { background: var(--bg2); border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 11px 18px; border-radius: var(--r); box-shadow: 0 8px 28px rgba(0,0,0,.45); animation: tslide .28s ease; max-width: 310px; font-size: .9rem; }
@@ -351,8 +370,6 @@
 
 </main>
 
-<!-- Player datalist (shared across all pick rows) -->
-<datalist id="prospects-list"></datalist>
 
 <!-- Modal -->
 <div id="modal" class="modal-overlay" style="display:none">
@@ -550,13 +567,11 @@ document.addEventListener('DOMContentLoaded', () => {
   try { allSubmissions = JSON.parse(localStorage.getItem('draftSubs2026') || '{}'); } catch(e){}
   try { actualResults  = JSON.parse(localStorage.getItem('draftRes2026')  || '[]'); } catch(e){}
 
-  // Populate datalist
-  const dl = document.getElementById('prospects-list');
-  PROSPECTS.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p.name;
-    opt.label = `${p.pos} · ${p.school}`;
-    dl.appendChild(opt);
+  document.addEventListener('click', e => {
+    if (!activeDropdown) return;
+    if (!activeDropdown.panel.contains(e.target) && !activeDropdown.trigger.contains(e.target)) {
+      closePlayerDropdown();
+    }
   });
 
   renderHome();
@@ -654,12 +669,11 @@ function renderPicksTable() {
       <td class="pnum ${d.pick<=32?'r1':'r2'}">${d.pick}</td>
       <td><select class="team-sel" data-idx="${i}" data-field="team">${teamOpts}</select></td>
       <td>
-        <div class="player-cell">
+        <div class="cs-trigger" id="pt-${i}" onclick="openPlayerDropdown(this, ${i}, false)">
           <img id="ph-${i}" class="p-photo" src="${imgSrc}" data-id="${espnId}"
             onerror="imgFallback(this)" alt="">
-          <input id="pi-${i}" type="text" list="prospects-list" class="player-inp"
-            value="${eh(p.player)}" placeholder="Type player name…"
-            data-idx="${i}" oninput="onPlayerInput(this)" onchange="onPlayerInput(this)">
+          <span class="cs-name">${eh(p.player)}</span>
+          <span class="cs-arrow">▼</span>
         </div>
       </td>
       <td><select id="ps-${i}" class="pos-sel${prospect?' autofilled':''}" data-idx="${i}" data-field="position">${posOpts}</select></td>
@@ -677,32 +691,6 @@ function renderPicksTable() {
   });
 }
 
-function onPlayerInput(el) {
-  const idx = parseInt(el.dataset.idx);
-  const name = el.value.trim();
-  currentPicks[idx].player = name;
-
-  const prospect = PROSPECT_MAP[name.toLowerCase()];
-  const imgEl = document.getElementById(`ph-${idx}`);
-  const posEl = document.getElementById(`ps-${idx}`);
-
-  if (prospect) {
-    // Update photo
-    if (imgEl) {
-      imgEl.src = photoUrl(prospect.espnId);
-      imgEl.dataset.id = prospect.espnId || '';
-    }
-    // Auto-fill position
-    if (posEl && posEl.value !== prospect.pos) {
-      posEl.value = prospect.pos;
-      posEl.classList.add('autofilled');
-      currentPicks[idx].position = prospect.pos;
-    }
-  } else if (name === '') {
-    if (imgEl) imgEl.src = SILO;
-    if (posEl) posEl.classList.remove('autofilled');
-  }
-}
 
 function imgFallback(img) {
   const id = img.dataset.id;
@@ -963,10 +951,10 @@ function buildResultsTable() {
       <td class="pnum ${d.pick<=32?'r1':'r2'}">${d.pick}</td>
       <td><select class="team-sel" id="rt-${i}">${teamOpts}</select></td>
       <td>
-        <div class="player-cell">
+        <div class="cs-trigger" id="rpt-${i}" onclick="openPlayerDropdown(this, ${i}, true)">
           <img id="rph-${i}" class="p-photo" src="${SILO}" data-id="" onerror="imgFallback(this)" alt="">
-          <input type="text" list="prospects-list" class="player-inp" id="rp-${i}"
-            value="${eh(r.player)}" placeholder="Player name" oninput="onResultPlayer(this,${i})" onchange="onResultPlayer(this,${i})">
+          <span class="cs-name">${eh(r.player) || '— Select Player —'}</span>
+          <span class="cs-arrow">▼</span>
         </div>
       </td>
       <td><select class="pos-sel" id="rs-${i}">${posOpts}</select></td>
@@ -980,15 +968,6 @@ function buildResultsTable() {
   }
 }
 
-function onResultPlayer(el, idx) {
-  const name = el.value.trim();
-  const prospect = PROSPECT_MAP[name.toLowerCase()];
-  updateResultPhoto(idx, name);
-  if (prospect) {
-    const posEl = document.getElementById(`rs-${idx}`);
-    if (posEl) posEl.value = prospect.pos;
-  }
-}
 
 function updateResultPhoto(idx, name) {
   const imgEl = document.getElementById(`rph-${idx}`);
@@ -1005,25 +984,23 @@ function updateResultPhoto(idx, name) {
 
 function loadDefaultResults() {
   DRAFT_DATA.forEach((d,i) => {
-    const te=document.getElementById(`rt-${i}`), pe=document.getElementById(`rp-${i}`), se=document.getElementById(`rs-${i}`);
-    const prospect = PROSPECT_MAP[d.player.toLowerCase()];
+    const te = document.getElementById(`rt-${i}`);
     if (te) te.value = d.team;
-    if (pe) pe.value = d.player;
-    if (se && prospect) se.value = prospect.pos;
-    updateResultPhoto(i, d.player);
+    setResultPlayerDisplay(i, d.player);
   });
   toast('Mock draft loaded as placeholder — update with actual picks as announced');
 }
 
 function saveResults() {
-  actualResults = [];
+  const saved = [];
   for (let i=0; i<35; i++) {
-    actualResults.push({
-      team:     (document.getElementById(`rt-${i}`)?.value || ''),
-      player:   (document.getElementById(`rp-${i}`)?.value.trim() || ''),
-      position: (document.getElementById(`rs-${i}`)?.value || '')
+    saved.push({
+      team:     document.getElementById(`rt-${i}`)?.value || '',
+      player:   actualResults[i]?.player || '',
+      position: document.getElementById(`rs-${i}`)?.value || ''
     });
   }
+  actualResults = saved;
   localStorage.setItem('draftRes2026', JSON.stringify(actualResults));
   renderCompare();
   toast('Results saved — scores updated!', 'ok');
@@ -1070,10 +1047,12 @@ async function importFromESPN() {
           if (athlete) {
             const playerName = athlete.fullName || athlete.displayName || '';
             const pos = athlete.position?.abbreviation || '';
-            const pe = document.getElementById(`rp-${idx}`);
-            const se = document.getElementById(`rs-${idx}`);
-            if (pe && playerName) { pe.value = playerName; updateResultPhoto(idx, playerName); updated++; }
-            if (se && pos) se.value = pos;
+            if (playerName) { setResultPlayerDisplay(idx, playerName); updated++; }
+            if (pos) {
+              const se = document.getElementById(`rs-${idx}`);
+              if (se) se.value = pos;
+              if (actualResults[idx]) actualResults[idx].position = pos;
+            }
           }
         } catch(err) { /* athlete fetch failed, skip */ }
       }
@@ -1124,6 +1103,124 @@ function renderCompare() {
     </tr>`;
   }).join('')}
   </tbody></table>`;
+}
+
+// ================================================================
+//  PLAYER DROPDOWN
+// ================================================================
+let activeDropdown = null;
+
+function openPlayerDropdown(trigger, pickIdx, isResult) {
+  closePlayerDropdown();
+
+  const rect = trigger.getBoundingClientRect();
+  const panelWidth = Math.max(300, rect.width);
+  let left = rect.left + window.scrollX;
+  let top  = rect.bottom + window.scrollY + 4;
+  if (left + panelWidth > window.innerWidth - 10) left = window.innerWidth - panelWidth - 10;
+
+  const panel = document.createElement('div');
+  panel.className = 'cs-dropdown';
+  panel.style.cssText = `left:${left}px;top:${top}px;width:${panelWidth}px;min-width:280px`;
+  panel.innerHTML = `
+    <div class="cs-search"><input type="text" placeholder="Search players…" autocomplete="off"></div>
+    <div class="cs-list"></div>`;
+  document.body.appendChild(panel);
+  trigger.classList.add('open');
+
+  activeDropdown = { trigger, panel, pickIdx, isResult };
+
+  const searchInput = panel.querySelector('.cs-search input');
+  const listEl      = panel.querySelector('.cs-list');
+
+  listEl.addEventListener('click', e => {
+    const opt = e.target.closest('.cs-option');
+    if (!opt) return;
+    const name = opt.dataset.pname;
+    if (name) selectPlayerOption(name, pickIdx, isResult);
+  });
+
+  renderDropdownOptions(listEl, '', pickIdx, isResult);
+  searchInput.addEventListener('input', () => renderDropdownOptions(listEl, searchInput.value, pickIdx, isResult));
+  setTimeout(() => searchInput.focus(), 0);
+}
+
+function renderDropdownOptions(listEl, query, pickIdx, isResult) {
+  const q = query.toLowerCase().trim();
+  const filtered = q
+    ? PROSPECTS.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.pos.toLowerCase().includes(q) ||
+        p.school.toLowerCase().includes(q))
+    : PROSPECTS;
+  const currentName = isResult
+    ? (actualResults[pickIdx]?.player || '')
+    : (currentPicks[pickIdx]?.player || '');
+  listEl.innerHTML = filtered.length
+    ? filtered.map(p => {
+        const sel = norm(p.name) === norm(currentName);
+        return `<div class="cs-option${sel?' selected':''}" data-pname="${eh(p.name)}">
+          <img class="cs-opt-photo" src="${photoUrl(p.espnId)}" data-id="${p.espnId||''}" onerror="imgFallback(this)" alt="">
+          <div class="cs-opt-info">
+            <div class="cs-opt-name">${eh(p.name)}</div>
+            <div class="cs-opt-sub">${p.pos} · ${eh(p.school)}</div>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div style="padding:16px;text-align:center;color:var(--text2);font-size:.85rem">No players found</div>`;
+}
+
+function selectPlayerOption(name, pickIdx, isResult) {
+  if (isResult) {
+    setResultPlayerDisplay(pickIdx, name);
+  } else {
+    currentPicks[pickIdx].player = name;
+    const prospect = PROSPECT_MAP[name.toLowerCase()];
+    const trigger = document.getElementById(`pt-${pickIdx}`);
+    if (trigger) {
+      trigger.querySelector('.cs-name').textContent = name;
+      const img = trigger.querySelector('.p-photo');
+      if (img) {
+        img.src = prospect ? photoUrl(prospect.espnId) : SILO;
+        img.dataset.id = prospect?.espnId || '';
+      }
+    }
+    if (prospect) {
+      currentPicks[pickIdx].position = prospect.pos;
+      const posEl = document.getElementById(`ps-${pickIdx}`);
+      if (posEl) { posEl.value = prospect.pos; posEl.classList.add('autofilled'); }
+    }
+  }
+  closePlayerDropdown();
+}
+
+function closePlayerDropdown() {
+  if (activeDropdown) {
+    activeDropdown.panel.remove();
+    activeDropdown.trigger.classList.remove('open');
+    activeDropdown = null;
+  }
+}
+
+function setResultPlayerDisplay(idx, name) {
+  if (!actualResults[idx]) actualResults[idx] = { team:'', player:'', position:'' };
+  actualResults[idx].player = name;
+  const trigger = document.getElementById(`rpt-${idx}`);
+  if (trigger) {
+    trigger.querySelector('.cs-name').textContent = name || '— Select Player —';
+    const img = trigger.querySelector('.p-photo');
+    if (img) {
+      const prospect = PROSPECT_MAP[name.toLowerCase()];
+      img.src = prospect ? photoUrl(prospect.espnId) : SILO;
+      img.dataset.id = prospect?.espnId || '';
+    }
+  }
+  const prospect = PROSPECT_MAP[name.toLowerCase()];
+  if (prospect) {
+    actualResults[idx].position = prospect.pos;
+    const posEl = document.getElementById(`rs-${idx}`);
+    if (posEl) posEl.value = prospect.pos;
+  }
 }
 
 // ================================================================
