@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Draft Day Picks 2026</title>
+  <title>Memphis Keeper League — 2026 Draft Picks</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -17,8 +17,11 @@
     /* HEADER */
     header { background: linear-gradient(135deg, #001040, #001f5b, #002070); border-bottom: 3px solid var(--accent); padding: 0 24px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 24px rgba(0,0,0,.6); }
     .hdr { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
-    .logo { font-size: 1.35rem; font-weight: 800; letter-spacing: -.5px; }
-    .logo span { color: var(--accent); }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 800; letter-spacing: -.3px; }
+    .logo-img { width: 40px; height: 40px; border-radius: 50%; object-fit: contain; flex-shrink: 0; }
+    .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-text .league-name { color: var(--accent); font-size: 1rem; font-weight: 900; letter-spacing: .3px; }
+    .logo-text .league-sub { color: rgba(255,255,255,.55); font-size: .7rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
     nav { display: flex; gap: 4px; }
     nav button { background: transparent; border: 1px solid transparent; color: rgba(255,255,255,.65); padding: 7px 15px; border-radius: var(--r); cursor: pointer; font-size: .88rem; font-weight: 600; transition: all .18s; }
     nav button:hover, nav button.active { background: rgba(240,180,41,.1); border-color: var(--accent); color: var(--accent); }
@@ -188,7 +191,13 @@
 
 <header>
   <div class="hdr">
-    <div class="logo">🏈 <span>DRAFT DAY</span> PICKS 2026</div>
+    <div class="logo">
+      <img id="mkl-logo" class="logo-img" src="" alt="MKL">
+      <div class="logo-text">
+        <span class="league-name">Memphis Keeper League</span>
+        <span class="league-sub">2026 NFL Draft Picks</span>
+      </div>
+    </div>
     <nav>
       <button class="nav-btn active" data-view="leaderboard">🏠 Home</button>
       <button class="nav-btn" data-view="admin">⚙️ Admin</button>
@@ -201,7 +210,10 @@
   <!-- HOME -->
   <div id="view-home" class="view active">
     <div class="home-hero">
-      <h1>2026 NFL Draft <span>Pick Contest</span></h1>
+      <div style="display:flex;justify-content:center;margin-bottom:16px">
+        <img id="hero-logo" src="" alt="Memphis Keeper League" style="width:90px;height:90px;border-radius:50%;object-fit:contain;border:3px solid var(--accent);padding:4px;background:rgba(255,255,255,.05)">
+      </div>
+      <h1>Memphis Keeper League <span>2026 Draft</span></h1>
       <p class="sub">Pick the team, player, and position for each of the first 35 selections</p>
       <div class="pill">📍 Pittsburgh, PA · April 23–25, 2026</div>
       <div class="scoring-pills">
@@ -547,6 +559,32 @@ const ESPN_TEAM_MAP = {
   "29":"Carolina Panthers","30":"Jacksonville Jaguars","33":"Baltimore Ravens","34":"Houston Texans"
 };
 
+// Memphis Keeper League logo (SVG data URL)
+const MKL_LOGO = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="99" fill="white"/>
+  <circle cx="100" cy="100" r="96" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+  <circle cx="100" cy="100" r="78" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+  <defs>
+    <path id="tA" d="M 26,100 A 74,74 0 0,1 174,100"/>
+    <path id="bA" d="M 34,112 A 66,66 0 0,0 166,112"/>
+  </defs>
+  <text fill="#1a1a1a" font-size="11.5" font-family="Arial,sans-serif" font-weight="bold" letter-spacing="2.5">
+    <textPath href="#tA" startOffset="5%">MEMPHIS KEEPER LEAGUE</textPath>
+  </text>
+  <text fill="#1a1a1a" font-size="9" font-family="Arial,sans-serif" letter-spacing="3">
+    <textPath href="#bA" startOffset="28%">EST · 2015</textPath>
+  </text>
+  <!-- main pyramid -->
+  <polygon points="100,42 148,128 52,128" fill="#1a1a1a"/>
+  <!-- left hill -->
+  <polygon points="40,128 72,90 100,128" fill="#555"/>
+  <!-- right hill -->
+  <polygon points="100,128 128,90 162,128" fill="#555"/>
+  <!-- water waves -->
+  <path d="M44,136 Q62,130 80,136 Q98,142 116,136 Q134,130 156,136" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M50,144 Q68,138 86,144 Q104,150 122,144 Q140,138 152,144" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-linecap="round"/>
+</svg>`)}`;
+
 // Silhouette for when ESPN headshot fails
 const SILO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2321262d'/%3E%3Ccircle cx='50' cy='34' r='18' fill='%2330363d'/%3E%3Cellipse cx='50' cy='92' rx='30' ry='25' fill='%2330363d'/%3E%3C/svg%3E";
 
@@ -572,6 +610,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!activeDropdown.panel.contains(e.target) && !activeDropdown.trigger.contains(e.target)) {
       closePlayerDropdown();
     }
+  });
+
+  // Set MKL logo on all logo img elements
+  ['mkl-logo','hero-logo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.src = MKL_LOGO;
   });
 
   renderHome();
