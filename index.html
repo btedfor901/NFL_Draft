@@ -137,10 +137,16 @@
     .cell-ok { background: rgba(63,185,80,.12) !important; } .cell-no { background: rgba(248,81,73,.09) !important; }
 
     /* ESPN IMPORT TOOLBAR */
-    .espn-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: rgba(204,0,0,.08); border: 1px solid rgba(204,0,0,.3); border-radius: var(--r); padding: 14px 18px; margin-bottom: 18px; }
+    .espn-bar { display: flex; flex-wrap: wrap; gap: 10px; background: rgba(204,0,0,.08); border: 1px solid rgba(204,0,0,.3); border-radius: var(--r); padding: 14px 18px; margin-bottom: 18px; }
     .espn-bar .espn-logo { font-size: 1.4rem; font-weight: 900; color: #cc0000; letter-spacing: -1px; }
-    .espn-bar p { color: var(--text2); font-size: .88rem; flex: 1; min-width: 0; }
-    #espn-status { color: var(--text2); font-size: .82rem; width: 100%; margin-top: 4px; }
+    .espn-bar-row { display: flex; align-items: center; gap: 10px; width: 100%; flex-wrap: wrap; }
+    #espn-status { color: var(--text2); font-size: .82rem; width: 100%; margin-top: 2px; }
+    .live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .live-dot.active { animation: livepulse 1.4s ease-in-out infinite; }
+    .live-dot.paused { background: var(--text2); }
+    @keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(1.35)} }
+    #live-label { font-size: .83rem; font-weight: 700; }
+    #espn-countdown { font-size: .8rem; color: var(--text2); margin-left: 2px; }
 
     /* MODAL */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.78); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -332,10 +338,19 @@
       <div id="tab-results" class="tab-pane">
         <!-- ESPN Live Import Bar -->
         <div class="espn-bar">
-          <span class="espn-logo">ESPN</span>
-          <p>Auto-import live picks as they happen during the draft</p>
-          <button class="btn btn-espn btn-sm" onclick="importFromESPN()">🔄 Refresh from ESPN</button>
-          <a href="https://www.espn.com/nfl/draft/rounds" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">📺 Watch Live on ESPN ↗</a>
+          <div class="espn-bar-row">
+            <span class="espn-logo">ESPN</span>
+            <div class="live-dot paused" id="live-dot"></div>
+            <span id="live-label" style="color:var(--text2)">Auto-refresh off</span>
+            <span id="espn-countdown"></span>
+            <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <button class="btn btn-espn btn-sm" onclick="importFromESPN()">🔄 Refresh Now</button>
+              <button class="btn btn-secondary btn-sm" id="autopoll-btn" onclick="toggleAutoPoll()">▶ Start Live</button>
+              <a href="https://www.espn.com/nfl/draft/rounds" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">ESPN ↗</a>
+              <a href="https://www.nfl.com/draft/tracker" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">NFL.com ↗</a>
+              <a href="https://www.cbssports.com/nfl/draft/draft-tracker/" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">CBS ↗</a>
+            </div>
+          </div>
           <span id="espn-status"></span>
         </div>
         <div class="admin-section">
@@ -894,6 +909,7 @@ function adminLogin() {
 }
 
 function adminLogout() {
+  stopAutoRefresh();
   adminIn = false;
   document.getElementById('admin-gate').style.display = 'block';
   document.getElementById('admin-panel').style.display = 'none';
@@ -906,6 +922,8 @@ function switchTab(tab) {
   document.getElementById('tab-'+tab).classList.add('active');
   if (tab==='compare') renderCompare();
   if (tab==='links')   buildMemberLinks();
+  if (tab==='results') startAutoRefresh();
+  else                 stopAutoRefresh();
 }
 
 function buildMemberLinks() {
@@ -1083,67 +1101,166 @@ function saveResults() {
   toast('Results saved — scores updated!', 'ok');
 }
 
+// ── Auto-refresh state ──
+let autoRefreshActive = false;
+let countdownHandle = null;
+const POLL_SECS = 60;
+
+function startAutoRefresh() {
+  if (autoRefreshActive) return;
+  autoRefreshActive = true;
+  updatePollUI();
+  importFromESPN();
+  scheduleNextPoll();
+}
+
+function stopAutoRefresh() {
+  autoRefreshActive = false;
+  if (countdownHandle) { clearInterval(countdownHandle); countdownHandle = null; }
+  updatePollUI();
+}
+
+function toggleAutoPoll() {
+  if (autoRefreshActive) stopAutoRefresh();
+  else startAutoRefresh();
+}
+
+function scheduleNextPoll() {
+  if (countdownHandle) clearInterval(countdownHandle);
+  let secs = POLL_SECS;
+  const cdEl = document.getElementById('espn-countdown');
+  if (cdEl) cdEl.textContent = `· next in ${secs}s`;
+  countdownHandle = setInterval(() => {
+    if (!autoRefreshActive) { clearInterval(countdownHandle); countdownHandle = null; return; }
+    secs--;
+    if (cdEl) cdEl.textContent = `· next in ${secs}s`;
+    if (secs <= 0) {
+      clearInterval(countdownHandle);
+      countdownHandle = null;
+      importFromESPN().finally(() => { if (autoRefreshActive) scheduleNextPoll(); });
+    }
+  }, 1000);
+}
+
+function updatePollUI() {
+  const dot  = document.getElementById('live-dot');
+  const lbl  = document.getElementById('live-label');
+  const btn  = document.getElementById('autopoll-btn');
+  const cd   = document.getElementById('espn-countdown');
+  if (autoRefreshActive) {
+    dot?.classList.replace('paused','active');
+    if (lbl) { lbl.textContent = '🔴 LIVE — Auto-refreshing every 60s'; lbl.style.color = 'var(--green)'; }
+    if (btn) btn.textContent = '⏸ Pause';
+  } else {
+    dot?.classList.replace('active','paused');
+    if (lbl) { lbl.textContent = 'Auto-refresh off'; lbl.style.color = 'var(--text2)'; }
+    if (btn) btn.textContent = '▶ Start Live';
+    if (cd) cd.textContent = '';
+  }
+}
+
 // ── ESPN Live Import ──
 async function importFromESPN() {
   const statusEl = document.getElementById('espn-status');
-  statusEl.textContent = '⏳ Fetching picks from ESPN...';
+  if (statusEl) statusEl.textContent = '⏳ Fetching picks...';
 
   try {
-    // Try fetching both round 1 and round 2 simultaneously
     const [r1res, r2res] = await Promise.all([
       fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/draft?season=2026&round=1'),
       fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/draft?season=2026&round=2')
     ]);
     const r1 = await r1res.json();
     const r2 = await r2res.json();
-
     const picks = [...(r1.picks||[]), ...(r2.picks||[]).slice(0,3)];
     let updated = 0;
 
     for (const pick of picks) {
-      if (!pick.overall || pick.overall > 35) continue;
-      const idx = pick.overall - 1;
+      const pickNum = pick.overall ?? pick.overallPickNumber ?? pick.pick;
+      if (!pickNum || pickNum > 35) continue;
+      const idx = pickNum - 1;
 
-      // Update team
-      const team = ESPN_TEAM_MAP[String(pick.teamId)];
+      // ── Team ──
+      const teamId = String(pick.teamId ?? pick.team?.id ?? '');
+      const team = ESPN_TEAM_MAP[teamId];
       if (team) {
         const te = document.getElementById(`rt-${idx}`);
         if (te) te.value = team;
+        if (!actualResults[idx]) actualResults[idx] = { team:'', player:'', position:'' };
+        actualResults[idx].team = team;
       }
 
-      // Try to get player from candidate or athlete reference
-      const athleteId = pick.athleteId || pick.athlete?.id || pick.athlete;
-      if (athleteId && typeof athleteId !== 'object') {
-        try {
-          // Try NFL athlete endpoint, then college
-          let athlete = null;
-          for (const sport of ['nfl','college-football']) {
-            const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/${sport}/athletes/${athleteId}`);
-            if (res.ok) { athlete = await res.json(); break; }
-          }
-          if (athlete) {
-            const playerName = athlete.fullName || athlete.displayName || '';
-            const pos = athlete.position?.abbreviation || '';
-            if (playerName) { setResultPlayerDisplay(idx, playerName); updated++; }
-            if (pos) {
-              const se = document.getElementById(`rs-${idx}`);
-              if (se) se.value = pos;
-              if (actualResults[idx]) actualResults[idx].position = pos;
+      // ── Player: 4 strategies ──
+      let playerName = '', pos = '';
+
+      // 1. Inline athlete object
+      if (!playerName && pick.athlete && typeof pick.athlete === 'object') {
+        playerName = pick.athlete.fullName || pick.athlete.displayName || pick.athlete.shortName || '';
+        pos = pick.athlete.position?.abbreviation || '';
+      }
+      // 2. Candidate nested athlete (ESPN sometimes uses this format)
+      if (!playerName && pick.candidate?.athlete && typeof pick.candidate.athlete === 'object') {
+        const ca = pick.candidate.athlete;
+        playerName = ca.fullName || ca.displayName || ca.shortName || '';
+        pos = ca.position?.abbreviation || '';
+      }
+      // 3. pick.player string/object
+      if (!playerName && pick.player) {
+        playerName = typeof pick.player === 'string' ? pick.player : (pick.player.fullName || pick.player.displayName || '');
+      }
+      // 4. Fetch athlete by ID
+      if (!playerName) {
+        const aid = pick.athleteId ?? pick.athlete?.id ?? (typeof pick.athlete === 'string' ? pick.athlete : null);
+        if (aid) {
+          try {
+            for (const sport of ['nfl','college-football']) {
+              const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/${sport}/athletes/${aid}`);
+              if (r.ok) {
+                const d = await r.json();
+                if (d.fullName || d.displayName) {
+                  playerName = d.fullName || d.displayName;
+                  pos = d.position?.abbreviation || '';
+                  break;
+                }
+              }
             }
-          }
-        } catch(err) { /* athlete fetch failed, skip */ }
+          } catch(e) {}
+        }
+      }
+
+      if (playerName) {
+        setResultPlayerDisplay(idx, playerName);
+        if (pos && !PROSPECT_MAP[playerName.toLowerCase()]) {
+          const se = document.getElementById(`rs-${idx}`);
+          if (se) se.value = pos;
+          if (actualResults[idx]) actualResults[idx].position = pos;
+        }
+        updated++;
       }
     }
 
+    // Auto-save + update leaderboard after each successful fetch
     if (updated > 0) {
-      statusEl.textContent = `✅ Imported ${updated} pick${updated!==1?'s':''} from ESPN`;
-      toast(`Imported ${updated} live pick${updated!==1?'s':''} from ESPN!`, 'ok');
-    } else {
-      statusEl.textContent = `ℹ️ No new picks announced yet — try again when picks are made`;
+      const saved = [];
+      for (let i=0; i<35; i++) {
+        saved.push({
+          team:     document.getElementById(`rt-${i}`)?.value || actualResults[i]?.team || '',
+          player:   actualResults[i]?.player || '',
+          position: document.getElementById(`rs-${i}`)?.value || actualResults[i]?.position || ''
+        });
+      }
+      actualResults = saved;
+      localStorage.setItem('draftRes2026', JSON.stringify(actualResults));
+      renderCompare();
     }
+
+    const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    if (statusEl) statusEl.textContent = updated > 0
+      ? `✅ ${updated} pick${updated!==1?'s':''} synced · Last updated ${now}`
+      : `ℹ️ No new picks yet · Last checked ${now}`;
+
   } catch(err) {
-    statusEl.textContent = `❌ Could not reach ESPN. Check the live page manually.`;
-    toast('ESPN import failed — enter results manually', 'err');
+    const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    if (statusEl) statusEl.textContent = `❌ ESPN unreachable at ${now} — will retry automatically`;
   }
 }
 
