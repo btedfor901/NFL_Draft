@@ -223,10 +223,11 @@
       <p class="sub">Pick the team, player, and position for each of the first 35 selections</p>
       <div class="pill">📍 Pittsburgh, PA · April 23–25, 2026</div>
       <div class="scoring-pills">
-        <div class="sp"><span class="pt">+1 pt</span> Correct Team</div>
-        <div class="sp"><span class="pt">+1 pt</span> Correct Player</div>
-        <div class="sp"><span class="pt">+1 pt</span> Correct Position</div>
-        <div class="sp" style="color:var(--text2)">Max 3 pts/pick · 105 pts total</div>
+        <div class="sp"><span class="pt">+1 pt</span> Correct Team at Pick</div>
+        <div class="sp"><span class="pt">+1 pt</span> Correct Player at Pick</div>
+        <div class="sp"><span class="pt">+1 pt</span> Correct Position at Pick</div>
+        <div class="sp"><span class="pt">+1 pt</span> Player → Right Team (any pick)</div>
+        <div class="sp" style="color:var(--text2)">Max 3 pts/pick · bonus combos tracked separately</div>
       </div>
       <div class="section-label">Select Your Name to Fill Out Your Picks</div>
     </div>
@@ -246,9 +247,10 @@
       </div>
     </div>
     <div class="scoring-info">
-      <div class="rule"><span class="score-badge">+1</span> Correct Team</div>
-      <div class="rule"><span class="score-badge">+1</span> Correct Player</div>
-      <div class="rule"><span class="score-badge">+1</span> Correct Position</div>
+      <div class="rule"><span class="score-badge">+1</span> Correct Team at Pick</div>
+      <div class="rule"><span class="score-badge">+1</span> Correct Player at Pick</div>
+      <div class="rule"><span class="score-badge">+1</span> Correct Position at Pick</div>
+      <div class="rule"><span class="score-badge">+1</span> Player → Right Team (any pick)</div>
       <span class="note">Pre-filled with Kiper's Final Mock · Player dropdown auto-fills position · Change team for trades</span>
     </div>
     <div class="table-wrap">
@@ -1274,6 +1276,33 @@ function downloadJSON(name, data) {
 function redownload() { if (lastSubmission) downloadJSON(lastSubmission.memberName, lastSubmission); }
 
 // ================================================================
+//  SCORING
+// ================================================================
+function scoreSubmission(sub, results) {
+  let tp=0, pp=0, sp=0, xp=0;
+  sub.picks.forEach((pick, i) => {
+    const r = results[i];
+    if (!r || !r.player) return;
+    if (norm(pick.team)   === norm(r.team))     tp++;
+    if (norm(pick.player) === norm(r.player))   pp++;
+    if (norm(pick.position) === norm(r.position)) sp++;
+  });
+  // Cross-pick bonus: predicted player → team combo is correct but at a different pick number
+  sub.picks.forEach((pick, i) => {
+    if (!pick.player) return;
+    const exactPlayerMatch = results[i] && norm(results[i].player) === norm(pick.player);
+    if (exactPlayerMatch) return; // already counted in pp; no double-dip
+    const hit = results.findIndex((r, j) =>
+      j !== i && r && r.player &&
+      norm(r.player) === norm(pick.player) &&
+      norm(r.team)   === norm(pick.team)
+    );
+    if (hit !== -1) xp++;
+  });
+  return { tp, pp, sp, xp, total: tp + pp + sp + xp };
+}
+
+// ================================================================
 //  LEADERBOARD
 // ================================================================
 function renderLeaderboard() {
@@ -1288,20 +1317,14 @@ function renderLeaderboard() {
     return;
   }
   const scored = subs.map(([name, sub]) => {
-    let tp=0,pp=0,sp=0;
-    if (hasRes) sub.picks.forEach((pick,i) => {
-      const r = actualResults[i]; if(!r) return;
-      if (norm(pick.team)===norm(r.team)) tp++;
-      if (norm(pick.player)===norm(r.player)) pp++;
-      if (norm(pick.position)===norm(r.position)) sp++;
-    });
-    return { name, tp, pp, sp, total:tp+pp+sp, submittedAt: sub.submittedAt };
+    const s = hasRes ? scoreSubmission(sub, actualResults) : { tp:0, pp:0, sp:0, xp:0, total:0 };
+    return { name, ...s, submittedAt: sub.submittedAt };
   });
   if (hasRes) scored.sort((a,b) => b.total-a.total);
 
   cnt.innerHTML = `<div class="table-wrap"><table class="lb-table"><thead><tr>
     <th>Rank</th><th>Name</th>
-    ${hasRes?'<th>Score</th><th>Teams</th><th>Players</th><th>Positions</th>':'<th>Submitted</th>'}
+    ${hasRes?'<th>Score</th><th>Teams</th><th>Players</th><th>Positions</th><th title="+1 per correct player→team at wrong pick #">Combos</th>':'<th>Submitted</th>'}
     <th>View</th>
   </tr></thead><tbody>
   ${scored.map((s,i) => {
@@ -1310,10 +1333,11 @@ function renderLeaderboard() {
       <td><div class="rank-badge ${rc}">${i+1}</div></td>
       <td style="font-weight:700">${eh(s.name)}</td>
       ${hasRes?`
-        <td><span class="score-big">${s.total}</span><span style="color:var(--text2);font-size:.8rem">/105</span></td>
+        <td><span class="score-big">${s.total}</span></td>
         <td><span class="cat-badge">${s.tp}/35</span></td>
         <td><span class="cat-badge">${s.pp}/35</span></td>
         <td><span class="cat-badge">${s.sp}/35</span></td>
+        <td><span class="cat-badge">${s.xp > 0 ? '+'+s.xp : s.xp}</span></td>
       `:`<td style="color:var(--text2);font-size:.85rem">${new Date(s.submittedAt).toLocaleDateString()}</td>`}
       <td><button class="btn btn-secondary btn-sm" data-mn="${eh(s.name)}" onclick="openModal(this.dataset.mn)">View</button></td>
     </tr>`;
@@ -1345,6 +1369,15 @@ function openModal(name) {
       const tok=norm(pick.team)===norm(r.team), pok=norm(pick.player)===norm(r.player), psok=norm(pick.position)===norm(r.position);
       tc=tok?'cell-ok':'cell-no'; pc=pok?'cell-ok':'cell-no'; sc=psok?'cell-ok':'cell-no';
       pts=(tok?1:0)+(pok?1:0)+(psok?1:0);
+      // Cross-pick bonus: player correctly sent to their actual team, but at a different pick
+      if (!pok && pick.player) {
+        const crossHit = actualResults.findIndex((rr,j) =>
+          j !== i && rr && rr.player &&
+          norm(rr.player) === norm(pick.player) &&
+          norm(rr.team)   === norm(pick.team)
+        );
+        if (crossHit !== -1) pts += 1;
+      }
     }
     html += `<tr>
       <td class="pnum ${num<=32?'r1':'r2'}">${num}</td>
@@ -1356,7 +1389,7 @@ function openModal(name) {
         </div>
       </td>
       <td class="${sc}">${eh(pick.position)}</td>
-      ${hasRes?`<td style="font-weight:700">${pts}/3</td>`:''}
+      ${hasRes?`<td style="font-weight:700">${pts}</td>`:''}
     </tr>`;
   });
   html += `</tbody></table></div>`;
@@ -1381,7 +1414,6 @@ function adminLogin() {
 }
 
 function adminLogout() {
-  stopAutoRefresh();
   adminIn = false;
   document.getElementById('admin-gate').style.display = 'block';
   document.getElementById('admin-panel').style.display = 'none';
@@ -1710,26 +1742,21 @@ function renderCompare() {
   if (!subs.length || !hasRes) { el.innerHTML = '<p style="color:var(--text2)">Import submissions and save actual results to see scores.</p>'; return; }
 
   const scored = subs.map(([name,sub]) => {
-    let tp=0,pp=0,sp=0;
-    sub.picks.forEach((pick,i) => {
-      const r=actualResults[i]; if(!r) return;
-      if(norm(pick.team)===norm(r.team)) tp++;
-      if(norm(pick.player)===norm(r.player)) pp++;
-      if(norm(pick.position)===norm(r.position)) sp++;
-    });
-    return { name, tp, pp, sp, total:tp+pp+sp };
+    const s = scoreSubmission(sub, actualResults);
+    return { name, ...s };
   }).sort((a,b)=>b.total-a.total);
 
   el.innerHTML = `<table class="lb-table" style="margin-bottom:24px"><thead><tr>
-    <th>Rank</th><th>Name</th><th>Total</th><th>Teams</th><th>Players</th><th>Positions</th><th>View</th>
+    <th>Rank</th><th>Name</th><th>Total</th><th>Teams</th><th>Players</th><th>Positions</th><th title="+1 per correct player→team at wrong pick #">Combos</th><th>View</th>
   </tr></thead><tbody>
   ${scored.map((s,i)=>{
     const rc=i===0?'rk1':i===1?'rk2':i===2?'rk3':'rkx';
     return `<tr>
       <td><div class="rank-badge ${rc}">${i+1}</div></td>
       <td style="font-weight:700">${eh(s.name)}</td>
-      <td><span class="score-big">${s.total}</span><span style="color:var(--text2);font-size:.8rem">/105</span></td>
+      <td><span class="score-big">${s.total}</span></td>
       <td>${s.tp}/35</td><td>${s.pp}/35</td><td>${s.sp}/35</td>
+      <td>${s.xp > 0 ? '+'+s.xp : s.xp}</td>
       <td><button class="btn btn-secondary btn-sm" data-mn="${eh(s.name)}" onclick="openModal(this.dataset.mn)">View</button></td>
     </tr>`;
   }).join('')}
