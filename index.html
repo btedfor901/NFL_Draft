@@ -1331,7 +1331,7 @@ function scoreSubmission(sub, results) {
     if (!r || !r.player) return;
     if (norm(pick.team)   === norm(r.team))     tp++;
     if (norm(pick.player) === norm(r.player))   pp++;
-    if (norm(pick.position) === norm(r.position)) sp++;
+    if (normPos(pick.position) === normPos(r.position)) sp++;
   });
   // Cross-pick bonus: predicted player → team combo is correct but at a different pick number
   sub.picks.forEach((pick, i) => {
@@ -1931,6 +1931,13 @@ function setResultPlayerDisplay(idx, name) {
 //  UTILS
 // ================================================================
 function norm(s) { return (s||'').toLowerCase().trim().replace(/\s+/g,' '); }
+// Group offensive line (OT/OG/C → OL) and defensive line (DT/DE → DL) for position scoring
+function normPos(s) {
+  const p = (s||'').toUpperCase().trim();
+  if (p === 'OT' || p === 'OG' || p === 'C') return 'OL';
+  if (p === 'DT' || p === 'DE') return 'DL';
+  return p;
+}
 function eh(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function toast(msg, type='') {
   const c = document.getElementById('toasts');
