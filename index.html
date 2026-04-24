@@ -1060,6 +1060,47 @@ const PDF_SHEET_PICKS = {
 const SILO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2321262d'/%3E%3Ccircle cx='50' cy='34' r='18' fill='%2330363d'/%3E%3Cellipse cx='50' cy='92' rx='30' ry='25' fill='%2330363d'/%3E%3C/svg%3E";
 
 // ================================================================
+//  2026 NFL DRAFT — OFFICIAL ROUND 1 RESULTS (picks 1-32 confirmed)
+// ================================================================
+const DEFAULT_RESULTS = [
+  {pick:1,  team:"Las Vegas Raiders",       player:"Fernando Mendoza",   position:"QB"},
+  {pick:2,  team:"New York Jets",           player:"David Bailey",        position:"EDGE"},
+  {pick:3,  team:"Arizona Cardinals",       player:"Jeremiyah Love",      position:"RB"},
+  {pick:4,  team:"Tennessee Titans",        player:"Carnell Tate",        position:"WR"},
+  {pick:5,  team:"New York Giants",         player:"Arvell Reese",        position:"EDGE"},
+  {pick:6,  team:"Kansas City Chiefs",      player:"Mansoor Delane",      position:"CB"},
+  {pick:7,  team:"Washington Commanders",   player:"Sonny Styles",        position:"LB"},
+  {pick:8,  team:"New Orleans Saints",      player:"Jordyn Tyson",        position:"WR"},
+  {pick:9,  team:"Cleveland Browns",        player:"Spencer Fano",        position:"OT"},
+  {pick:10, team:"New York Giants",         player:"Francis Mauigoa",     position:"OT"},
+  {pick:11, team:"Dallas Cowboys",          player:"Caleb Downs",         position:"S"},
+  {pick:12, team:"Miami Dolphins",          player:"Kadyn Proctor",       position:"OT"},
+  {pick:13, team:"Los Angeles Rams",        player:"Ty Simpson",          position:"QB"},
+  {pick:14, team:"Baltimore Ravens",        player:"Olaivavega Ioane",    position:"OG"},
+  {pick:15, team:"Tampa Bay Buccaneers",    player:"Rueben Bain Jr.",     position:"EDGE"},
+  {pick:16, team:"New York Jets",           player:"Kenyon Sadiq",        position:"TE"},
+  {pick:17, team:"Detroit Lions",           player:"Blake Miller",        position:"OT"},
+  {pick:18, team:"Minnesota Vikings",       player:"Caleb Banks",         position:"DT"},
+  {pick:19, team:"Carolina Panthers",       player:"Monroe Freeling",     position:"OT"},
+  {pick:20, team:"Philadelphia Eagles",     player:"Makai Lemon",         position:"WR"},
+  {pick:21, team:"Pittsburgh Steelers",     player:"Max Iheanachor",      position:"OT"},
+  {pick:22, team:"Los Angeles Chargers",    player:"Akheem Mesidor",      position:"EDGE"},
+  {pick:23, team:"Dallas Cowboys",          player:"Malachi Lawrence",    position:"EDGE"},
+  {pick:24, team:"Cleveland Browns",        player:"KC Concepcion",       position:"WR"},
+  {pick:25, team:"Chicago Bears",           player:"Dillon Thieneman",    position:"S"},
+  {pick:26, team:"Houston Texans",          player:"Keylan Rutledge",     position:"OG"},
+  {pick:27, team:"Miami Dolphins",          player:"Chris Johnson",       position:"CB"},
+  {pick:28, team:"New England Patriots",    player:"Caleb Lomu",          position:"OT"},
+  {pick:29, team:"Kansas City Chiefs",      player:"Peter Woods",         position:"DT"},
+  {pick:30, team:"New York Jets",           player:"Omar Cooper Jr.",     position:"WR"},
+  {pick:31, team:"Tennessee Titans",        player:"Keldric Faulk",       position:"EDGE"},
+  {pick:32, team:"Seattle Seahawks",        player:"Jadarian Price",      position:"RB"},
+  {pick:33, team:"",                        player:"",                    position:""},
+  {pick:34, team:"",                        player:"",                    position:""},
+  {pick:35, team:"",                        player:"",                    position:""},
+];
+
+// ================================================================
 //  STATE
 // ================================================================
 let currentMemberIdx = null;
@@ -1074,7 +1115,12 @@ let adminIn = false;
 // ================================================================
 document.addEventListener('DOMContentLoaded', () => {
   try { allSubmissions = JSON.parse(localStorage.getItem('draftSubs2026') || '{}'); } catch(e){}
-  try { actualResults  = JSON.parse(localStorage.getItem('draftRes2026')  || '[]'); } catch(e){}
+  // Seed from official results; defer to localStorage if admin has entered overrides
+  actualResults = DEFAULT_RESULTS.slice();
+  try {
+    const stored = JSON.parse(localStorage.getItem('draftRes2026') || '[]');
+    if (stored.length > 0) actualResults = stored;
+  } catch(e) {}
 
   // Auto-seed PDF sheet picks for any member who hasn't submitted yet
   let seeded = 0;
