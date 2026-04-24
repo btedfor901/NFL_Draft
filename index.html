@@ -1122,10 +1122,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (stored.length > 0) actualResults = stored;
   } catch(e) {}
 
-  // Auto-seed PDF sheet picks for any member who hasn't submitted yet
+  // Auto-seed PDF sheet picks — always overwrite stale sheet-seeded entries
   let seeded = 0;
   Object.entries(PDF_SHEET_PICKS).forEach(([name, rawPicks]) => {
-    if (!allSubmissions[name]) {
+    if (!allSubmissions[name] || allSubmissions[name].fromSheet) {
       allSubmissions[name] = {
         memberName: name,
         picks: rawPicks.map(p => {
